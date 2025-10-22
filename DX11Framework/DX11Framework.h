@@ -47,10 +47,14 @@ class DX11Framework
 	HWND _windowHandle;
 
 	XMFLOAT4X4 _World;
+	XMFLOAT4X4 _World2;
 	XMFLOAT4X4 _View;
 	XMFLOAT4X4 _Projection;
 
 	ConstantBuffer _cbData;
+
+	ID3D11Texture2D* _depthStencilBuffer;
+	ID3D11DepthStencilView* _depthStencilView;
 
 public:
 	HRESULT Initialise(HINSTANCE hInstance, int nCmdShow);
