@@ -1,3 +1,1 @@
-Starting point for GDEV50038 assignment 
-
-Renders a single rotating square using DirectX 11 
+My Dissertation artefact working on generating foliage using batching and comparing performance to other rendering methods.
