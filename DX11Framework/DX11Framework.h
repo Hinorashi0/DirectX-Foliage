@@ -48,6 +48,7 @@ class DX11Framework
 
 	XMFLOAT4X4 _World;
 	XMFLOAT4X4 _World2;
+	XMFLOAT4X4 _World3;
 	XMFLOAT4X4 _View;
 	XMFLOAT4X4 _Projection;
 

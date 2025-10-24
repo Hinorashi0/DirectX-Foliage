@@ -163,6 +163,7 @@ HRESULT DX11Framework::CreateSwapChainAndFrameBuffer()
     _device->CreateTexture2D(&depthBufferDesc, nullptr, &_depthStencilBuffer);
     _device->CreateDepthStencilView(_depthStencilBuffer, nullptr, &_depthStencilView);
 
+
     frameBuffer->Release();
 
 
@@ -370,7 +371,7 @@ HRESULT DX11Framework::InitRunTimeData()
     //Camera
     float aspect = _viewport.Width / _viewport.Height;
 
-    XMFLOAT3 Eye = XMFLOAT3(0, 0, -3.0f);
+    XMFLOAT3 Eye = XMFLOAT3(0, 0, -15.0f);
     XMFLOAT3 At = XMFLOAT3(0, 0, 0);
     XMFLOAT3 Up = XMFLOAT3(0, 1, 0);
 
@@ -417,9 +418,11 @@ void DX11Framework::Update()
     static float simpleCount = 0.0f;
     simpleCount += deltaTime;
 
-    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount));
+    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationY(simpleCount));
 
-    XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(2, 0, 2));
+    XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, 0, 2.5) * XMMatrixRotationY(simpleCount));
+    
+
 
     if (GetAsyncKeyState(VK_F1) & 0x0001) 
     {
@@ -431,7 +434,7 @@ void DX11Framework::Draw()
 {    
     //Present unbinds render target, so rebind and clear at start of each frame
     float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };  
-    _immediateContext->OMSetRenderTargets(1, &_frameBufferView, 0);
+    _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
    
@@ -462,6 +465,17 @@ void DX11Framework::Draw()
 
     //Load new world info
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World2));
+
+    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
+    _immediateContext->Unmap(_constantBuffer, 0);
+
+    _immediateContext->DrawIndexed(36, 0, 0);
+
+    //Remap to update data
+    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+
+    //Load new world info
+    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World3));
 
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
