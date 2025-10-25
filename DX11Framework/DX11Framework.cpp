@@ -272,6 +272,18 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     };
 
+    SimpleVertex PyramidVertexData[] =
+    {
+        //Bottom Face
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+
+        //Tip point
+        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
+    };
+
     D3D11_BUFFER_DESC vertexBufferDesc = {};
     vertexBufferDesc.ByteWidth = sizeof(VertexData);
     vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -280,6 +292,16 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     D3D11_SUBRESOURCE_DATA vertexData = { VertexData };
 
     hr = _device->CreateBuffer(&vertexBufferDesc, &vertexData, &_vertexBuffer);
+    if (FAILED(hr)) return hr;
+
+    D3D11_BUFFER_DESC pyramidvertexBufferDesc = {};
+    pyramidvertexBufferDesc.ByteWidth = sizeof(PyramidVertexData);
+    pyramidvertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    pyramidvertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA pyramidvertexData = { PyramidVertexData };
+
+    hr = _device->CreateBuffer(&pyramidvertexBufferDesc, &pyramidvertexData, &_pyramidVertexBuffer);
     if (FAILED(hr)) return hr;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -306,6 +328,15 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
         23, 21, 22,
     };
 
+    WORD PyramidVertexData[] =
+    {
+        0, 1, 3,
+        0, 3, 2,
+
+
+
+    };
+
     D3D11_BUFFER_DESC indexBufferDesc = {};
     indexBufferDesc.ByteWidth = sizeof(IndexData);
     indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -315,6 +346,8 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     hr = _device->CreateBuffer(&indexBufferDesc, &indexData, &_indexBuffer);
     if (FAILED(hr)) return hr;
+
+
 
     return S_OK;
 }

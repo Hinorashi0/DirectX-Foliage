@@ -43,6 +43,8 @@ class DX11Framework
 	ID3D11Buffer* _constantBuffer;
 	ID3D11Buffer* _vertexBuffer;
 	ID3D11Buffer* _indexBuffer;
+	ID3D11Buffer* _cubeVertexBuffer;
+	ID3D11Buffer* _pyramidVertexBuffer;
 
 	HWND _windowHandle;
 
