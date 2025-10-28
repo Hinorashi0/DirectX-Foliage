@@ -280,8 +280,26 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
         { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
         { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
 
-        //Tip point
+        //Front Face
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
         { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+
+        //Right Face
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
+
+        //Back Face
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
+
+        //Left Face
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
+
     };
 
     D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -328,12 +346,18 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
         23, 21, 22,
     };
 
-    WORD PyramidVertexData[] =
+    WORD PyramidIndexData[] =
     {
         0, 1, 3,
-        0, 3, 2,
+        2, 0, 3,
 
+        4, 5, 6,
 
+        7, 8, 9,
+
+        10, 11, 12,
+
+        13, 14, 15,
 
     };
 
@@ -348,6 +372,16 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     if (FAILED(hr)) return hr;
 
 
+    // Index buffer currently making the code not run. unsure what is causing the issue.
+    D3D11_BUFFER_DESC pyramidindexBufferDesc = {};
+    indexBufferDesc.ByteWidth = sizeof(PyramidIndexData);
+    indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA pyramidData = { PyramidIndexData };
+
+    hr = _device->CreateBuffer(&pyramidindexBufferDesc, &pyramidData, &_pyramidIndexBuffer);
+    if (FAILED(hr)) return hr;
 
     return S_OK;
 }
@@ -436,6 +470,8 @@ DX11Framework::~DX11Framework()
     if(_indexBuffer)_indexBuffer->Release();
     if(_depthStencilBuffer)_depthStencilBuffer->Release();
     if (_depthStencilView)_depthStencilView->Release();
+    if (_pyramidIndexBuffer)_pyramidIndexBuffer->Release();
+    if (_pyramidVertexBuffer)_pyramidVertexBuffer->Release();
 }
 
 
@@ -455,7 +491,7 @@ void DX11Framework::Update()
 
     XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, 0, 2.5) * XMMatrixRotationY(simpleCount));
     
-
+    XMStoreFloat4x4(&_World3, XMMatrixIdentity() * XMMatrixTranslation(4, 0, 4) * XMMatrixRotationY(simpleCount));
 
     if (GetAsyncKeyState(VK_F1) & 0x0001) 
     {
@@ -502,9 +538,11 @@ void DX11Framework::Draw()
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
 
+
     _immediateContext->DrawIndexed(36, 0, 0);
 
-    //Remap to update data
+
+    /*//Remap to update data
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
     //Load new world info
@@ -513,7 +551,10 @@ void DX11Framework::Draw()
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
 
-    _immediateContext->DrawIndexed(36, 0, 0);
+    _immediateContext->IASetVertexBuffers(0, 1, &_pyramidVertexBuffer, &stride, &offset);
+    _immediateContext->IASetIndexBuffer(_pyramidIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+
+    _immediateContext->DrawIndexed(18, 0, 0);*/
 
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);
