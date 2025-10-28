@@ -302,6 +302,12 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     };
 
+    SimpleVertex linelist[] =
+    {
+        {XMFLOAT3(0,3,0), XMFLOAT4(1, 1, 1, 1) },
+        {XMFLOAT3(0,4,0), XMFLOAT4(1, 1, 1, 1) },
+    };
+
     D3D11_BUFFER_DESC vertexBufferDesc = {};
     vertexBufferDesc.ByteWidth = sizeof(VertexData);
     vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -321,6 +327,17 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     hr = _device->CreateBuffer(&pyramidvertexBufferDesc, &pyramidvertexData, &_pyramidVertexBuffer);
     if (FAILED(hr)) return hr;
+
+    D3D11_BUFFER_DESC linevertexBufferDesc = {};
+    linevertexBufferDesc.ByteWidth = sizeof(linelist);
+    linevertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    linevertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA linevertexData = { linelist };
+
+    hr = _device->CreateBuffer(&linevertexBufferDesc, &linevertexData, &_lineVertexBuffer);
+    if (FAILED(hr)) return hr;
+
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -372,7 +389,6 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     if (FAILED(hr)) return hr;
 
 
-    // Index buffer currently making the code not run. unsure what is causing the issue.
     D3D11_BUFFER_DESC pyramidindexBufferDesc = {};
     pyramidindexBufferDesc.ByteWidth = sizeof(PyramidIndexData);
     pyramidindexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -438,7 +454,7 @@ HRESULT DX11Framework::InitRunTimeData()
     //Camera
     float aspect = _viewport.Width / _viewport.Height;
 
-    XMFLOAT3 Eye = XMFLOAT3(0, 0, -6.0f);
+    XMFLOAT3 Eye = XMFLOAT3(0, 0, -10.0f);
     XMFLOAT3 At = XMFLOAT3(0, 0, 0);
     XMFLOAT3 Up = XMFLOAT3(0, 1, 0);
 
@@ -472,6 +488,7 @@ DX11Framework::~DX11Framework()
     if (_depthStencilView)_depthStencilView->Release();
     if (_pyramidIndexBuffer)_pyramidIndexBuffer->Release();
     if (_pyramidVertexBuffer)_pyramidVertexBuffer->Release();
+    if (_lineVertexBuffer)_lineVertexBuffer->Release();
 }
 
 
@@ -486,18 +503,18 @@ void DX11Framework::Update()
 
     static float simpleCount = 0.0f;
     simpleCount += deltaTime;
-
-    
+    _cbData.count = simpleCount;
 
     XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationY(simpleCount));
-
-    
 
     XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, 0, 2.5) * XMMatrixRotationY(simpleCount));
 
     XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
 
     XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationY(simpleCount));
+
+    XMStoreFloat4x4(&_World4, XMMatrixIdentity());
+    
 
     if (GetAsyncKeyState(VK_F1) & 0x0001) 
     {
@@ -507,8 +524,11 @@ void DX11Framework::Update()
 
 void DX11Framework::Draw()
 {    
+
+
     //Present unbinds render target, so rebind and clear at start of each frame
     float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };  
+    _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
@@ -535,7 +555,7 @@ void DX11Framework::Draw()
 
     _immediateContext->DrawIndexed(36, 0, 0);
 
-    //Remap to update data
+    //Remap to update data Earth
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
     //Load new world info
@@ -547,7 +567,7 @@ void DX11Framework::Draw()
 
     _immediateContext->DrawIndexed(36, 0, 0);
      
-    //Remap to update data
+    //Remap to update data Moon
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
     //Load new world info
@@ -560,6 +580,19 @@ void DX11Framework::Draw()
     _immediateContext->IASetIndexBuffer(_pyramidIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
     _immediateContext->DrawIndexed(18, 0, 0);
+
+    //Remap to update data Line
+    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+
+    //Load new world info
+    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World4));
+
+    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
+    _immediateContext->Unmap(_constantBuffer, 0);
+
+    _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+    _immediateContext->IASetVertexBuffers(0, 1, &_lineVertexBuffer, &stride, &offset);
+    _immediateContext->Draw(2, 0);
 
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);

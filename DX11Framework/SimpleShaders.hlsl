@@ -3,12 +3,15 @@ cbuffer ConstantBuffer : register(b0)
     float4x4 Projection;
     float4x4 View;
     float4x4 World;
+    float count;
 }
 
 struct VS_Out
 {
     float4 position : SV_POSITION;
     float4 color : COLOR;
+    float3 PosW : POSITION0;
+    
 };
 
 VS_Out VS_main(float3 Position : POSITION, float4 Color : COLOR)
@@ -20,12 +23,18 @@ VS_Out VS_main(float3 Position : POSITION, float4 Color : COLOR)
     output.position = mul(output.position, View);
     output.position = mul(output.position, Projection);
     
+    output.PosW = Position;
+    
     output.color = Color;
     
     return output;
 }
 
 float4 PS_main(VS_Out input) : SV_TARGET
-{
-    return input.color;
+{ 
+    if (input.PosW.y > 0.15f)
+        return input.color * 0.5f;
+    else
+        return input.color * 0.0f;
+   
 }

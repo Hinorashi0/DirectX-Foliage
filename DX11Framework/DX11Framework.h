@@ -20,6 +20,7 @@ struct ConstantBuffer
 	XMMATRIX Projection;
 	XMMATRIX View;
 	XMMATRIX World;
+	float count;
 };
 
 class DX11Framework
@@ -46,12 +47,14 @@ class DX11Framework
 	ID3D11Buffer* _cubeVertexBuffer;
 	ID3D11Buffer* _pyramidVertexBuffer;
 	ID3D11Buffer* _pyramidIndexBuffer;
+	ID3D11Buffer* _lineVertexBuffer;
 
 	HWND _windowHandle;
 
 	XMFLOAT4X4 _World;
 	XMFLOAT4X4 _World2;
 	XMFLOAT4X4 _World3;
+	XMFLOAT4X4 _World4;
 	XMFLOAT4X4 _View;
 	XMFLOAT4X4 _Projection;
 
