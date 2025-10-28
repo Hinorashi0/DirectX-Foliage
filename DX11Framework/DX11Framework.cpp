@@ -348,8 +348,8 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     WORD PyramidIndexData[] =
     {
-        0, 1, 3,
-        2, 0, 3,
+        3, 1, 0,
+        3, 0, 2,
 
         4, 5, 6,
 
@@ -374,9 +374,9 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     // Index buffer currently making the code not run. unsure what is causing the issue.
     D3D11_BUFFER_DESC pyramidindexBufferDesc = {};
-    indexBufferDesc.ByteWidth = sizeof(PyramidIndexData);
-    indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    pyramidindexBufferDesc.ByteWidth = sizeof(PyramidIndexData);
+    pyramidindexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    pyramidindexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
     D3D11_SUBRESOURCE_DATA pyramidData = { PyramidIndexData };
 
@@ -438,7 +438,7 @@ HRESULT DX11Framework::InitRunTimeData()
     //Camera
     float aspect = _viewport.Width / _viewport.Height;
 
-    XMFLOAT3 Eye = XMFLOAT3(0, 0, -15.0f);
+    XMFLOAT3 Eye = XMFLOAT3(0, 0, -6.0f);
     XMFLOAT3 At = XMFLOAT3(0, 0, 0);
     XMFLOAT3 Up = XMFLOAT3(0, 1, 0);
 
@@ -487,11 +487,17 @@ void DX11Framework::Update()
     static float simpleCount = 0.0f;
     simpleCount += deltaTime;
 
+    
+
     XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationY(simpleCount));
 
-    XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, 0, 2.5) * XMMatrixRotationY(simpleCount));
     
-    XMStoreFloat4x4(&_World3, XMMatrixIdentity() * XMMatrixTranslation(4, 0, 4) * XMMatrixRotationY(simpleCount));
+
+    XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, 0, 2.5) * XMMatrixRotationY(simpleCount));
+
+    XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
+
+    XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationY(simpleCount));
 
     if (GetAsyncKeyState(VK_F1) & 0x0001) 
     {
@@ -540,9 +546,8 @@ void DX11Framework::Draw()
 
 
     _immediateContext->DrawIndexed(36, 0, 0);
-
-
-    /*//Remap to update data
+     
+    //Remap to update data
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
     //Load new world info
@@ -554,7 +559,7 @@ void DX11Framework::Draw()
     _immediateContext->IASetVertexBuffers(0, 1, &_pyramidVertexBuffer, &stride, &offset);
     _immediateContext->IASetIndexBuffer(_pyramidIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-    _immediateContext->DrawIndexed(18, 0, 0);*/
+    _immediateContext->DrawIndexed(18, 0, 0);
 
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);
