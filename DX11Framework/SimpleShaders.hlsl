@@ -18,12 +18,12 @@ VS_Out VS_main(float3 Position : POSITION, float4 Color : COLOR)
 {   
     VS_Out output = (VS_Out)0;
 
+    output.PosW = Position;
     float4 Pos4 = float4(Position, 1.0f);
+    output.position = output.PosW.y += sin(count);
     output.position = mul(Pos4, World);
     output.position = mul(output.position, View);
     output.position = mul(output.position, Projection);
-    
-    output.PosW = Position;
     
     output.color = Color;
     
