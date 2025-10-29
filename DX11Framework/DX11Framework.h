@@ -20,6 +20,9 @@ struct ConstantBuffer
 	XMMATRIX Projection;
 	XMMATRIX View;
 	XMMATRIX World;
+	XMFLOAT4X4 DiffuseLight;
+	XMFLOAT4X4 DiffuseMaterial;
+	XMFLOAT4X4 LightDir;
 	float count;
 };
 
@@ -57,6 +60,9 @@ class DX11Framework
 	XMFLOAT4X4 _World4;
 	XMFLOAT4X4 _View;
 	XMFLOAT4X4 _Projection;
+	XMFLOAT4X4 _diffuseLight;
+	XMFLOAT4X4 _diffuseMaterial;
+	XMFLOAT4X4 _lightDir;
 
 	ConstantBuffer _cbData;
 
