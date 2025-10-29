@@ -14,7 +14,7 @@ struct VS_Out
     
 };
 
-VS_Out VS_main(float3 Position : POSITION, float4 Color : COLOR)
+VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
 {   
     VS_Out output = (VS_Out)0;
 
@@ -25,7 +25,6 @@ VS_Out VS_main(float3 Position : POSITION, float4 Color : COLOR)
     output.position = mul(output.position, View);
     output.position = mul(output.position, Projection);
     
-    output.color = Color;
     
     return output;
 }

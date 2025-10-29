@@ -201,7 +201,7 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
     };
 
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
@@ -235,78 +235,78 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     {
         //Front Face
         //Position                     //Color             
-        { XMFLOAT3(-1.00f,  1.00f, -1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(1.00f,  1.00f, -1.00f),  XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),  XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(-1.00f,  1.00f, -1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(1.00f,  1.00f, -1.00f),  XMFLOAT3(0.0f,  1.0f, 0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),  XMFLOAT3(1.0f,  1.0f, 1.0f)},
 
         //Right Face
-        { XMFLOAT3(1.00f,  1.00f, -1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),  XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),  XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(1.00f,  1.00f, -1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(1.00f,  1.00f, 1.00f),  XMFLOAT3(0.0f,  1.0f, 0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),  XMFLOAT3(1.0f,  1.0f, 1.0f)},
 
         //Back Face
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),  XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),  XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(-1.00f,  1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(1.00f,  1.00f, 1.00f),  XMFLOAT3(0.0f,  1.0f, 0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),  XMFLOAT3(1.0f,  1.0f, 1.0f)},
 
         //Left Face
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(-1.00f,  1.00f, -1.00f),XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(-1.00f,  1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(-1.00f,  1.00f, -1.00f),XMFLOAT3(0.0f,  1.0f, 0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f),XMFLOAT3(1.0f,  1.0f, 1.0f)},
 
         //Top Face
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(-1.00f, 1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
-        { XMFLOAT3(1.00f, 1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(-1.00f,  1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(1.00f,  1.00f, 1.00f),XMFLOAT3(0.0f,  1.0f, 0.0f)},
+        { XMFLOAT3(-1.00f, 1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
+        { XMFLOAT3(1.00f, 1.00f, -1.00f),XMFLOAT3(1.0f,  1.0f, 1.0f)},
 
         //Bottom Face
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT3(0.0f,  1.0f, 0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT3(1.0f,  1.0f, 1.0f)},
 
     };
 
     SimpleVertex PyramidVertexData[] =
     {
         //Bottom Face
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT3(0.0f,  1.0f, 0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT3(1.0f,  1.0f, 1.0f)},
 
         //Front Face
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
-        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
+        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT3(1.0f,  1.0f, 1.0f)},
 
         //Right Face
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT4(1.0f,  1.0f, 1.0f,  0.0f)},
-        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT3(1.0f,  1.0f, 1.0f)},
+        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT3(0.0f,  1.0f, 0.0f)},
 
         //Back Face
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT4(0.0f,  1.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT3(0.0f,  1.0f, 0.0f)},
+        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
 
         //Left Face
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT4(1.0f,  0.0f, 0.0f,  0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT4(0.0f,  0.0f, 1.0f,  0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(0.0f, 1.0f, 0.50f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
 
     };
 
-    SimpleVertex linelist[] =
+    /*SimpleVertex linelist[] =
     {
         {XMFLOAT3(0,3,0), XMFLOAT4(1, 1, 1, 1) },
         {XMFLOAT3(0,4,0), XMFLOAT4(1, 1, 1, 1) },
-    };
+    };*/
 
     D3D11_BUFFER_DESC vertexBufferDesc = {};
     vertexBufferDesc.ByteWidth = sizeof(VertexData);
@@ -328,7 +328,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     hr = _device->CreateBuffer(&pyramidvertexBufferDesc, &pyramidvertexData, &_pyramidVertexBuffer);
     if (FAILED(hr)) return hr;
 
-    D3D11_BUFFER_DESC linevertexBufferDesc = {};
+    /*D3D11_BUFFER_DESC linevertexBufferDesc = {};
     linevertexBufferDesc.ByteWidth = sizeof(linelist);
     linevertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
     linevertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -336,7 +336,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     D3D11_SUBRESOURCE_DATA linevertexData = { linelist };
 
     hr = _device->CreateBuffer(&linevertexBufferDesc, &linevertexData, &_lineVertexBuffer);
-    if (FAILED(hr)) return hr;
+    if (FAILED(hr)) return hr;*/
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -513,7 +513,7 @@ void DX11Framework::Update()
 
     XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationY(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
 
-    XMStoreFloat4x4(&_World4, XMMatrixIdentity());
+    //XMStoreFloat4x4(&_World4, XMMatrixIdentity());
     
 
     if (GetAsyncKeyState(VK_F1) & 0x0001) 
