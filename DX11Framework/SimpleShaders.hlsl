@@ -19,23 +19,26 @@ struct VS_Out
 
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
 {   
-    VS_Out output = (VS_Out)0;
+    VS_Out output;
 
-    output.NormalW = Normal;
-    output.PosW = Position;
-    float4 Pos4 = float4(Position, 1.0f);
-    output.position = output.PosW.y += sin(count);
-    output.position = mul(Pos4, World);
-    output.position = mul(output.position, View);
-    output.position = mul(output.position, Projection);
+
+    float4 worldPos = mul(float4(Position, 1.0f), World);
+    output.position = mul(mul(worldPos, View), Projection);
+
+    float3x3 normalMatrix = (float3x3) World;
+    float3 NormalW = normalize(mul(Normal, normalMatrix));
+
+    float3 L = normalize(-LightDir);
+
+    float DiffuseAmount = saturate(dot(NormalW, L));
     
-    
+    output.color = DiffuseAmount * (DiffuseMaterial * DiffuseLight);
+
     return output;
 }
 
 float4 PS_main(VS_Out input) : SV_TARGET
 { 
-
-        return input.color;
+    return input;
    
 }
