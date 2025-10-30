@@ -19,15 +19,22 @@ struct VS_Out
 
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
 {   
+    float4 Pos4 = float4(Position, 1.0f);
+    
     VS_Out output = (VS_Out)0;
 
-    output.NormalW = Normal;
-    output.PosW = Position;
-    float4 Pos4 = float4(Position, 1.0f);
-    output.position = output.PosW.y += sin(count);
+
+    output.NormalW = mul(float4(Normal, 0), World);
+    
     output.position = mul(Pos4, World);
+    
+    output.PosW = Position;
+
     output.position = mul(output.position, View);
     output.position = mul(output.position, Projection);
+    
+    normalize(output.NormalW);
+    normalize(output.PosW);
     
     
     return output;
