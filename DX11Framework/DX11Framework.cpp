@@ -454,7 +454,7 @@ HRESULT DX11Framework::InitRunTimeData()
     //Camera
     float aspect = _viewport.Width / _viewport.Height;
 
-    XMFLOAT3 Eye = XMFLOAT3(0, 0, -5.0f);
+    XMFLOAT3 Eye = XMFLOAT3(0, 0, -10.0f);
     XMFLOAT3 At = XMFLOAT3(0, 0, 0);
     XMFLOAT3 Up = XMFLOAT3(0, 1, 0);
 
@@ -509,13 +509,13 @@ void DX11Framework::Update()
     simpleCount += deltaTime;
     _cbData.count = simpleCount;
 
-    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
+    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationY(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
 
-    XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, sin(simpleCount), 2.5) * XMMatrixRotationX(simpleCount));
+    XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, sin(simpleCount), 2.5) * XMMatrixRotationY(simpleCount));
 
     XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
 
-    XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
+    XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationY(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
 
     //XMStoreFloat4x4(&_World4, XMMatrixIdentity());
     
