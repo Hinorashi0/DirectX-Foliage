@@ -22,27 +22,35 @@ VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
     float4 Pos4 = float4(Position, 1.0f);
     
     VS_Out output = (VS_Out)0;
-
-
-    output.NormalW = mul(float4(Normal, 0), World);
     
     output.position = mul(Pos4, World);
     
-    output.PosW = Position;
+    output.PosW = output.position;
 
     output.position = mul(output.position, View);
     output.position = mul(output.position, Projection);
-    
-    normalize(output.NormalW);
+
     normalize(output.PosW);
     
+    output.NormalW = normalize(mul((float3x3) World, Normal));
+    
+    float normalizedDir = normalize(LightDir);
+    
+    float d = dot(output.NormalW, normalizedDir);
+    
+    float reflectedDir = reflect(normalizedDir, d);
+
+    
+    float DiffuseAmount = d * reflectedDir;
+    
+    //float4(0.5f + 0.5f * output.NormalW, 1)
+    //
+    output.color = DiffuseAmount * (DiffuseMaterial * DiffuseLight);
     
     return output;
 }
 
 float4 PS_main(VS_Out input) : SV_TARGET
 { 
-
-        return input.color;
-   
+    return input.color; 
 }

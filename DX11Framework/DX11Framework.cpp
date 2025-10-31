@@ -460,7 +460,7 @@ HRESULT DX11Framework::InitRunTimeData()
 
     XMFLOAT4 _diffuseLight = XMFLOAT4(0.6f, 0.6f, 0.6f, 0.6f);
     XMFLOAT4 _diffuseMaterial = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-    XMFLOAT3 _lightDir = XMFLOAT3(0, 0.5f, -0.5f);
+    XMFLOAT4 _lightDir = XMFLOAT4(0, 0.5f, -0.5f, 0);
 
     XMStoreFloat4x4(&_View, XMMatrixLookAtLH(XMLoadFloat3(&Eye), XMLoadFloat3(&At), XMLoadFloat3(&Up)));
 
