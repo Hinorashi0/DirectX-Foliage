@@ -19,6 +19,7 @@ struct VS_Out
 
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
 {   
+    //World Pos
     float4 Pos4 = float4(Position, 1.0f);
     
     VS_Out output = (VS_Out)0;
@@ -30,18 +31,15 @@ VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
     output.position = mul(output.position, View);
     output.position = mul(output.position, Projection);
 
-    normalize(output.PosW);
+    output.PosW = normalize(output.PosW);
     
     output.NormalW = normalize(mul((float3x3) World, Normal));
     
-    float normalizedDir = normalize(LightDir);
+    float3 normalizedDir = normalize(-LightDir);
     
-    float d = dot(output.NormalW, normalizedDir);
+    float3 reflectedDir = saturate(reflect(normalizedDir, output.NormalW));
     
-    float reflectedDir = reflect(normalizedDir, d);
-
-    
-    float DiffuseAmount = d * reflectedDir;
+    float DiffuseAmount = reflectedDir;
     
     //float4(0.5f + 0.5f * output.NormalW, 1)
     //

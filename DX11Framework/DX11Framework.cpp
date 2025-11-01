@@ -458,9 +458,9 @@ HRESULT DX11Framework::InitRunTimeData()
     XMFLOAT3 At = XMFLOAT3(0, 0, 0);
     XMFLOAT3 Up = XMFLOAT3(0, 1, 0);
 
-    XMFLOAT4 _diffuseLight = XMFLOAT4(0.6f, 0.6f, 0.6f, 0.6f);
-    XMFLOAT4 _diffuseMaterial = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-    XMFLOAT4 _lightDir = XMFLOAT4(0, 0.5f, -0.5f, 0);
+    _diffuseLight = XMFLOAT4(0.6f, 0.6f, 0.6f, 0.6f);
+    _diffuseMaterial = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+    _lightDir = XMFLOAT3(0, 0.5f, -0.5f);
 
     XMStoreFloat4x4(&_View, XMMatrixLookAtLH(XMLoadFloat3(&Eye), XMLoadFloat3(&At), XMLoadFloat3(&Up)));
 
@@ -509,13 +509,13 @@ void DX11Framework::Update()
     simpleCount += deltaTime;
     _cbData.count = simpleCount;
 
-    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationY(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
+    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
 
-    XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, sin(simpleCount), 2.5) * XMMatrixRotationY(simpleCount));
+    XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, sin(simpleCount), 2.5) * XMMatrixRotationX(simpleCount));
 
     XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
 
-    XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationY(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
+    XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
 
     //XMStoreFloat4x4(&_World4, XMMatrixIdentity());
     
