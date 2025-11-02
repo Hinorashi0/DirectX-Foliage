@@ -23,6 +23,8 @@ struct ConstantBuffer
 	XMFLOAT4 DiffuseLight;
 	XMFLOAT4 DiffuseMaterial;
 	XMFLOAT3 LightDir;
+	XMFLOAT4 AmbientLight;
+	XMFLOAT4 AmbientMaterial;
 	float count;
 };
 
@@ -63,6 +65,8 @@ class DX11Framework
 	XMFLOAT4 _diffuseLight;
 	XMFLOAT4 _diffuseMaterial;
 	XMFLOAT3 _lightDir;
+	XMFLOAT4 _ambientLight;
+	XMFLOAT4 _ambientMaterial;
 
 	ConstantBuffer _cbData;
 

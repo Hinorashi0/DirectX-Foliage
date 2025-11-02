@@ -24,30 +24,35 @@ struct PS_Input
 
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
 {
-    //World Pos 
-    float4 Pos4 = float4(Position, 1.0f);
+    VS_Out output;
+
+    // Transform to world space
+    output.position = mul(float4(Position, 1.0f), World);
     
-    VS_Out output = (VS_Out) 0;
-    PS_Input input = (PS_Input) 0;
-    output.position = mul(Pos4, World);
-    output.PosW = output.position;
-    output.PosW = normalize(output.PosW);
+    output.PosW = output.position.xyz;
+
+    // Transform to clip space
     output.position = mul(output.position, View);
     output.position = mul(output.position, Projection);
-    output.NormalW = normalize(mul(float4(input.Norm, 1), World)).xyz;
     
-    float4 ambient = AmbientLight + AmbientMaterial;
-    float3 lightPos = (0.0f, 0.0f, 0.0f, 0.0f);
-    float3 lightDir = normalize(lightPos - output.position.xyz);
-    float d = dot(output.NormalW, lightDir);
-    float DiffuseAmount = saturate(d);
-    
-    output.color = DiffuseAmount * (DiffuseMaterial * DiffuseLight);
-    
+    // Transform normal to world space
+    output.NormalW = normalize(mul(float4(Normal, 0.0f), World).xyz);
+
     return output;
 }
     
 float4 PS_main(VS_Out input) : SV_TARGET
 {
-    return input.color;
+    float3 N = normalize(input.NormalW);
+    float3 lightPos = (0, 0, 0);
+    float3 lightDir = normalize(lightPos - input.PosW.xyz);
+    float d = dot(input.NormalW, lightDir);
+
+    float DiffuseAmount = saturate(d);
+    float4 diffuse = DiffuseAmount * (DiffuseMaterial * DiffuseLight);
+
+    float4 ambient = AmbientMaterial * AmbientLight;
+
+    float4 color = ambient + diffuse;
+    return color;
 }

@@ -461,6 +461,8 @@ HRESULT DX11Framework::InitRunTimeData()
     _diffuseLight = XMFLOAT4(0.6f, 0.6f, 0.6f, 0.6f);
     _diffuseMaterial = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
     _lightDir = XMFLOAT3(0, 0.5f, -0.5f);
+    _ambientLight = XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
+    _ambientMaterial = XMFLOAT4(0, 0, 0, 0);
 
     XMStoreFloat4x4(&_View, XMMatrixLookAtLH(XMLoadFloat3(&Eye), XMLoadFloat3(&At), XMLoadFloat3(&Up)));
 
@@ -544,6 +546,8 @@ void DX11Framework::Draw()
     _cbData.DiffuseLight = _diffuseLight;
     _cbData.DiffuseMaterial = _diffuseMaterial;
     _cbData.LightDir = _lightDir;
+    _cbData.AmbientLight = _ambientLight;
+    _cbData.AmbientMaterial = _ambientMaterial;
 
     //Write constant buffer data onto GPU
     D3D11_MAPPED_SUBRESOURCE mappedSubresource;
