@@ -5,9 +5,9 @@ cbuffer ConstantBuffer : register(b0)
     float4x4 World;
     float4 DiffuseLight;
     float4 DiffuseMaterial;
-    float4 AmbientMaterial;
-    float4 AmbientLight;
     float3 LightDir;
+    float4 AmbientLight;
+    float4 AmbientMaterial;
     float count;
 }
 struct VS_Out
@@ -16,10 +16,6 @@ struct VS_Out
     float4 color : COLOR;
     float3 PosW : POSITION0;
     float3 NormalW : NORMAL;
-};
-struct PS_Input
-{
-    float3 Norm : TEXCOORD0;
 };
 
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
@@ -43,10 +39,7 @@ VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
     
 float4 PS_main(VS_Out input) : SV_TARGET
 {
-    float3 N = normalize(input.NormalW);
-    float3 lightPos = (0, 0, 0);
-    float3 lightDir = normalize(lightPos - input.PosW.xyz);
-    float d = dot(input.NormalW, lightDir);
+    float d = dot(input.NormalW, LightDir);
 
     float DiffuseAmount = saturate(d);
     float4 diffuse = DiffuseAmount * (DiffuseMaterial * DiffuseLight);

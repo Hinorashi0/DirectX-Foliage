@@ -233,43 +233,41 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     SimpleVertex VertexData[] = 
     {
-        //Front Face
-        //Position                     //Color             
-        { XMFLOAT3(-1.00f,  1.00f, -1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
-        { XMFLOAT3(1.00f,  1.00f, -1.00f),  XMFLOAT3(0.0f,  1.0f, 0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),  XMFLOAT3(1.0f,  1.0f, 1.0f)},
+        // Front Face
+        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
+        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
 
-        //Right Face
-        { XMFLOAT3(1.00f,  1.00f, -1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),  XMFLOAT3(0.0f,  1.0f, 0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),  XMFLOAT3(1.0f,  1.0f, 1.0f)},
+        // Right Face
+        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f) },
+        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f) },
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f) },
+        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f) },
 
-        //Back Face
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),  XMFLOAT3(0.0f,  1.0f, 0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),  XMFLOAT3(1.0f,  1.0f, 1.0f)},
+        // Back Face
+        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f) },
+        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f) },
+        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f) },
+        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f) },
 
-        //Left Face
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
-        { XMFLOAT3(-1.00f,  1.00f, -1.00f),XMFLOAT3(0.0f,  1.0f, 0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f),XMFLOAT3(1.0f,  1.0f, 1.0f)},
+        // Left Face
+        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f) },
+        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f) },
+        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f) },
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f) },
 
-        //Top Face
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),XMFLOAT3(0.0f,  1.0f, 0.0f)},
-        { XMFLOAT3(-1.00f, 1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
-        { XMFLOAT3(1.00f, 1.00f, -1.00f),XMFLOAT3(1.0f,  1.0f, 1.0f)},
+        // Top Face
+        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f) },
+        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f) },
+        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f) },
+        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f) },
 
-        //Bottom Face
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(1.0f,  0.0f, 0.0f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),XMFLOAT3(0.0f,  1.0f, 0.0f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(0.0f,  0.0f, 1.0f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),XMFLOAT3(1.0f,  1.0f, 1.0f)},
-
+        // Bottom Face
+        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f) },
+        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f) },
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f) },
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f) },
     };
 
     SimpleVertex PyramidVertexData[] =
