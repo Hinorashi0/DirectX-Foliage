@@ -5,9 +5,9 @@ cbuffer ConstantBuffer : register(b0)
     float4x4 World;
     float4 DiffuseLight;
     float4 DiffuseMaterial;
-    float3 LightDir;
     float4 AmbientLight;
     float4 AmbientMaterial;
+    float3 LightDir;
     float count;
 }
 struct VS_Out
@@ -39,7 +39,7 @@ VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
     
 float4 PS_main(VS_Out input) : SV_TARGET
 {
-    float d = dot(input.NormalW, LightDir);
+    float d = dot(input.NormalW, -LightDir);
 
     float DiffuseAmount = saturate(d);
     float4 diffuse = DiffuseAmount * (DiffuseMaterial * DiffuseLight);

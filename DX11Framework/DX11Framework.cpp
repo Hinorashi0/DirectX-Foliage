@@ -231,9 +231,9 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 {
     HRESULT hr = S_OK;
 
-    SimpleVertex VertexData[] = 
+    SimpleVertex VertexData[] =
     {
-        // Front Face
+        // Back Face
         { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
         { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
@@ -245,7 +245,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
         { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f) },
         { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f) },
 
-        // Back Face
+        // Front Face
         { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f) },
         { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f) },
         { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f) },
@@ -458,7 +458,7 @@ HRESULT DX11Framework::InitRunTimeData()
 
     _diffuseLight = XMFLOAT4(0.6f, 0.6f, 0.6f, 0.6f);
     _diffuseMaterial = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-    _lightDir = XMFLOAT3(0, 0.5f, -0.5f);
+    _lightDir = XMFLOAT3(0.0f, 0.0f, 1.0f);
     _ambientLight = XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
     _ambientMaterial = XMFLOAT4(0, 0, 0, 0);
 

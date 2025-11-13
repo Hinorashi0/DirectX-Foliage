@@ -22,9 +22,9 @@ struct ConstantBuffer
 	XMMATRIX World;
 	XMFLOAT4 DiffuseLight;
 	XMFLOAT4 DiffuseMaterial;
-	XMFLOAT3 LightDir;
 	XMFLOAT4 AmbientLight;
 	XMFLOAT4 AmbientMaterial;
+	XMFLOAT3 LightDir;
 	float count;
 };
 
