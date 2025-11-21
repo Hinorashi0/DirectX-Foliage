@@ -13,7 +13,7 @@ struct SimpleVertex
 {
 	XMFLOAT3 position;
 	XMFLOAT3 normal;
-	XMFLOAT2 texcoord;
+	XMFLOAT2 texture;
 };
 
 struct ConstantBuffer
