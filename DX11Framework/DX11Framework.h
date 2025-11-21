@@ -53,6 +53,7 @@ class DX11Framework
 	ID3D11Buffer* _pyramidVertexBuffer;
 	ID3D11Buffer* _pyramidIndexBuffer;
 	ID3D11Buffer* _lineVertexBuffer;
+	ID3D11BlendState* _blendState;
 
 	HWND _windowHandle;
 

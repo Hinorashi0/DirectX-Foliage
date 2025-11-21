@@ -201,7 +201,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
@@ -234,7 +235,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     SimpleVertex VertexData[] =
     {
         // Back Face
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
+        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },XMFLOAT3(0,0, 0),
         { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
         { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
@@ -418,6 +419,7 @@ HRESULT DX11Framework::InitPipelineVariables()
 
     _immediateContext->RSSetState(_fillState); 
 
+    //Wireframe
     D3D11_RASTERIZER_DESC wireframeDesc = {};
     wireframeDesc.FillMode = D3D11_FILL_WIREFRAME;
     wireframeDesc.CullMode = D3D11_CULL_NONE;
@@ -426,6 +428,26 @@ HRESULT DX11Framework::InitPipelineVariables()
     if (FAILED(hr)) return hr;
 
     _immediateContext->RSSetState(_fillState);
+
+    //Blend/Transparency
+    D3D11_BLEND_DESC blendDesc = {};
+
+    D3D11_RENDER_TARGET_BLEND_DESC rtbd = {};
+    rtbd.BlendEnable = true;
+    rtbd.SrcBlend = D3D11_BLEND_SRC_COLOR;
+    rtbd.DestBlend = D3D11_BLEND_BLEND_FACTOR;
+    rtbd.BlendOp = D3D11_BLEND_OP_ADD;
+    rtbd.SrcBlendAlpha = D3D11_BLEND_ONE;
+    rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
+    rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    blendDesc.AlphaToCoverageEnable = false;
+    blendDesc.RenderTarget[0] = rtbd;
+
+    _device->CreateBlendState(&blendDesc, &_blendState);
+
+
 
     //Viewport Values
     _viewport = { 0.0f, 0.0f, (float)_WindowWidth, (float)_WindowHeight, 0.0f, 1.0f };
@@ -493,6 +515,7 @@ DX11Framework::~DX11Framework()
     if (_pyramidIndexBuffer)_pyramidIndexBuffer->Release();
     if (_pyramidVertexBuffer)_pyramidVertexBuffer->Release();
     if (_lineVertexBuffer)_lineVertexBuffer->Release();
+    if (_blendState)_blendState->Release();
 }
 
 
@@ -536,6 +559,10 @@ void DX11Framework::Draw()
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+
+    FLOAT blendFactor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
+   // _immediateContext->OMSetBlendState(0, 0, 0xffffffff);//No Blend
+   // _immediateContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);//Transparent
    
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World));
@@ -553,6 +580,8 @@ void DX11Framework::Draw()
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
 
+    _immediateContext->OMSetBlendState(0, 0, 0xffffffff);
+
     //Set object variables and draw
     UINT stride = {sizeof(SimpleVertex)};
     UINT offset =  0 ;
@@ -564,6 +593,8 @@ void DX11Framework::Draw()
 
     _immediateContext->DrawIndexed(36, 0, 0);
 
+    _immediateContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
+
     //Remap to update data Earth
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
@@ -572,7 +603,6 @@ void DX11Framework::Draw()
 
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
-
 
     _immediateContext->DrawIndexed(36, 0, 0);
      
@@ -591,7 +621,7 @@ void DX11Framework::Draw()
     _immediateContext->DrawIndexed(18, 0, 0);
 
     //Remap to update data Line
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+   /*_immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
     //Load new world info
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World4));
@@ -601,7 +631,10 @@ void DX11Framework::Draw()
 
     _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
     _immediateContext->IASetVertexBuffers(0, 1, &_lineVertexBuffer, &stride, &offset);
-    _immediateContext->Draw(2, 0);
+    _immediateContext->Draw(2, 0);*/
+
+
+
 
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);
