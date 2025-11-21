@@ -235,7 +235,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     SimpleVertex VertexData[] =
     {
         // Back Face
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },XMFLOAT3(0,0, 0),
+        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },XMFLOAT2(0.0f, 0.0f),
         { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
         { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f) },
