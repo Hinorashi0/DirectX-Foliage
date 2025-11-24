@@ -27,6 +27,7 @@ struct ConstantBuffer
 	XMFLOAT4 AmbientMaterial;
 	XMFLOAT3 LightDir;
 	float count;
+	int hasTexture;
 };
 
 class DX11Framework
@@ -55,6 +56,7 @@ class DX11Framework
 	ID3D11Buffer* _pyramidIndexBuffer;
 	ID3D11Buffer* _lineVertexBuffer;
 	ID3D11BlendState* _blendState;
+	ID3D11SamplerState* _bilinearSamplerState;
 
 	HWND _windowHandle;
 

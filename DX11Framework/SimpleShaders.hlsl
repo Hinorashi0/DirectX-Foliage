@@ -9,6 +9,7 @@ cbuffer ConstantBuffer : register(b0)
     float4 AmbientMaterial;
     float3 LightDir;
     float count;
+    uint hasTexture;
 }
 struct VS_Out
 {
@@ -16,7 +17,11 @@ struct VS_Out
     float4 color : COLOR;
     float3 PosW : POSITION0;
     float3 NormalW : NORMAL;
+    float2 texCoord : TEXCOORD;
 };
+
+Texture2D diffuseTex : register(t0);
+SamplerState bilinearSampler : register(s0);
 
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
 {
@@ -47,5 +52,8 @@ float4 PS_main(VS_Out input) : SV_TARGET
     float4 ambient = AmbientMaterial * AmbientLight;
 
     float4 color = ambient + diffuse;
-    return color;
+    
+    float4 texColor = diffuseTex.Sample(bilinearSampler, input.texCoord);
+    
+    return texColor;
 }
