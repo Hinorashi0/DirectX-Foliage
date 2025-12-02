@@ -1,5 +1,7 @@
 #include "DX11Framework.h"
 #include <string>
+#include "DDSTextureLoader.h"
+
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
 #define ThrowOnFail(x) if(FAILED(x)) throw new std::exception;
 
@@ -481,6 +483,8 @@ HRESULT DX11Framework::InitPipelineVariables()
 
 HRESULT DX11Framework::InitRunTimeData()
 {
+    HRESULT hr = S_OK;
+
     //Camera
     float aspect = _viewport.Width / _viewport.Height;
 
@@ -499,6 +503,8 @@ HRESULT DX11Framework::InitRunTimeData()
     //Projection
     XMMATRIX perspective = XMMatrixPerspectiveFovLH(XMConvertToRadians(90), aspect, 0.01f, 100.0f);
     XMStoreFloat4x4(&_Projection, perspective);
+
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
 
     return S_OK;
 }
@@ -526,6 +532,7 @@ DX11Framework::~DX11Framework()
     if (_pyramidVertexBuffer)_pyramidVertexBuffer->Release();
     if (_lineVertexBuffer)_lineVertexBuffer->Release();
     if (_blendState)_blendState->Release();
+    if (_crateTexture)_crateTexture->Release();
 }
 
 
@@ -570,6 +577,7 @@ void DX11Framework::Draw()
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
+    _immediateContext->PSSetShaderResources(0, 1, &_crateTexture);
 
     FLOAT blendFactor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
    // _immediateContext->OMSetBlendState(0, 0, 0xffffffff);//No Blend

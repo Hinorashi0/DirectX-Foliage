@@ -1,5 +1,6 @@
 #include <windows.h>
 #include "DX11Framework.h"
+#include "DDSTextureLoader.h"
 
 //Dependencies:user32.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;
 

@@ -57,6 +57,7 @@ class DX11Framework
 	ID3D11Buffer* _lineVertexBuffer;
 	ID3D11BlendState* _blendState;
 	ID3D11SamplerState* _bilinearSamplerState;
+	ID3D11ShaderResourceView* _crateTexture;
 
 	HWND _windowHandle;
 
