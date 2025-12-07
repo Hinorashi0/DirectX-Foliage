@@ -4,6 +4,7 @@
 #include <d3d11_4.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include "DDSTextureLoader.h"
 //#include <wrl.h>
 
 using namespace DirectX;

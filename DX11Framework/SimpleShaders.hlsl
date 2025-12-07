@@ -1,3 +1,6 @@
+Texture2D diffuseTex : register(t0);
+SamplerState bilinearSampler : register(s0);
+
 cbuffer ConstantBuffer : register(b0)
 {
     float4x4 Projection;
@@ -20,8 +23,6 @@ struct VS_Out
     float2 texCoord : TEXCOORD;
 };
 
-Texture2D diffuseTex : register(t0);
-SamplerState bilinearSampler : register(s0);
 
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
 {

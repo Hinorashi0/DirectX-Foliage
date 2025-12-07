@@ -236,7 +236,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     SimpleVertex VertexData[] =
     {
-        // Back Face
+        // Front Face
         { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
         { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
@@ -248,7 +248,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
         { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 1.0f) },
         { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
 
-        // Front Face
+        // Back Face
         { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(0.0f, 0.0f) },
         { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(1.0f, 0.0f) },
         { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(0.0f, 1.0f) },
@@ -493,10 +493,10 @@ HRESULT DX11Framework::InitRunTimeData()
     XMFLOAT3 Up = XMFLOAT3(0, 1, 0);
 
     _diffuseLight = XMFLOAT4(0.6f, 0.6f, 0.6f, 0.6f);
-    _diffuseMaterial = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+    _diffuseMaterial = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
     _lightDir = XMFLOAT3(0.0f, 0.0f, 1.0f);
     _ambientLight = XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
-    _ambientMaterial = XMFLOAT4(0, 0, 0, 0);
+    _ambientMaterial = XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
 
     XMStoreFloat4x4(&_View, XMMatrixLookAtLH(XMLoadFloat3(&Eye), XMLoadFloat3(&At), XMLoadFloat3(&Up)));
 
@@ -504,7 +504,7 @@ HRESULT DX11Framework::InitRunTimeData()
     XMMATRIX perspective = XMMatrixPerspectiveFovLH(XMConvertToRadians(90), aspect, 0.01f, 100.0f);
     XMStoreFloat4x4(&_Projection, perspective);
 
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
+    hr = CreateDDSTextureFromFile(_device, L"C:\\DirectX-Foliage\\Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
 
     return S_OK;
 }
@@ -555,7 +555,7 @@ void DX11Framework::Update()
 
     XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
 
-    XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
+    //XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
 
     //XMStoreFloat4x4(&_World4, XMMatrixIdentity());
     
@@ -612,7 +612,7 @@ void DX11Framework::Draw()
 
     _immediateContext->DrawIndexed(36, 0, 0);
 
-    _immediateContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
+   //_immediateContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
 
     //Remap to update data Earth
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
