@@ -24,7 +24,7 @@ struct VS_Out
 };
 
 
-VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
+VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD)
 {
     VS_Out output;
 
@@ -39,6 +39,7 @@ VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL)
     
     // Transform normal to world space
     output.NormalW = normalize(mul(float4(Normal, 0.0f), World).xyz);
+    output.texCoord = TexCoord;
 
     return output;
 }
@@ -54,7 +55,7 @@ float4 PS_main(VS_Out input) : SV_TARGET
 
     float4 color = ambient + diffuse;
     
-    float4 texColor = diffuseTex.Sample(bilinearSampler, input.texCoord);
+    float4 texColor = color + diffuseTex.Sample(bilinearSampler, input.texCoord);
     
     return texColor;
 }

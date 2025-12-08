@@ -449,7 +449,7 @@ HRESULT DX11Framework::InitPipelineVariables()
 
     _device->CreateBlendState(&blendDesc, &_blendState);
 
-
+    //Bilinear sampler
     D3D11_SAMPLER_DESC bilinearSamplerdesc = {};
     bilinearSamplerdesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     bilinearSamplerdesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -492,6 +492,7 @@ HRESULT DX11Framework::InitRunTimeData()
     XMFLOAT3 At = XMFLOAT3(0, 0, 0);
     XMFLOAT3 Up = XMFLOAT3(0, 1, 0);
 
+    //Lighting Variables
     _diffuseLight = XMFLOAT4(0.6f, 0.6f, 0.6f, 0.6f);
     _diffuseMaterial = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
     _lightDir = XMFLOAT3(0.0f, 0.0f, 1.0f);
@@ -504,7 +505,8 @@ HRESULT DX11Framework::InitRunTimeData()
     XMMATRIX perspective = XMMatrixPerspectiveFovLH(XMConvertToRadians(90), aspect, 0.01f, 100.0f);
     XMStoreFloat4x4(&_Projection, perspective);
 
-    hr = CreateDDSTextureFromFile(_device, L"C:\\DirectX-Foliage\\Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
+    //Storing Textures
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
 
     return S_OK;
 }
@@ -572,17 +574,15 @@ void DX11Framework::Draw()
 
     //Present unbinds render target, so rebind and clear at start of each frame
     float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };  
+    FLOAT blendFactor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
     _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
     _immediateContext->PSSetShaderResources(0, 1, &_crateTexture);
-
-    FLOAT blendFactor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
-   // _immediateContext->OMSetBlendState(0, 0, 0xffffffff);//No Blend
-   // _immediateContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);//Transparent
-   
+    _immediateContext->OMSetBlendState(0, 0, 0xffffffff);
+    
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World));
     _cbData.View = XMMatrixTranspose(XMLoadFloat4x4(&_View));
@@ -599,7 +599,7 @@ void DX11Framework::Draw()
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
 
-    _immediateContext->OMSetBlendState(0, 0, 0xffffffff);
+
 
     //Set object variables and draw
     UINT stride = {sizeof(SimpleVertex)};
@@ -612,7 +612,7 @@ void DX11Framework::Draw()
 
     _immediateContext->DrawIndexed(36, 0, 0);
 
-   //_immediateContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
+    _immediateContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
 
     //Remap to update data Earth
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
@@ -625,7 +625,7 @@ void DX11Framework::Draw()
 
     _immediateContext->DrawIndexed(36, 0, 0);
      
-    //Remap to update data Moon
+    //Remap to update data 2nd Cube
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
     //Load new world info
