@@ -414,7 +414,7 @@ HRESULT DX11Framework::InitPipelineVariables()
     //Rasterizer
     D3D11_RASTERIZER_DESC rasterizerDesc = {};
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-    rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    rasterizerDesc.CullMode = D3D11_CULL_NONE;
 
     hr = _device->CreateRasterizerState(&rasterizerDesc, &_fillState);
     if (FAILED(hr)) return hr;
@@ -551,9 +551,9 @@ void DX11Framework::Update()
     simpleCount += deltaTime;
     _cbData.count = simpleCount;
 
-    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
+    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 2));
 
-    XMStoreFloat4x4(&_World2, XMMatrixIdentity() * XMMatrixTranslation(4, sin(simpleCount), 2.5) * XMMatrixRotationX(simpleCount));
+    XMStoreFloat4x4(&_World2, XMMatrixIdentity() /* XMMatrixTranslation(4, sin(simpleCount), 2.5)*/ * XMMatrixRotationX(simpleCount));
 
     XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
 

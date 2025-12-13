@@ -55,7 +55,11 @@ float4 PS_main(VS_Out input) : SV_TARGET
 
     float4 color = ambient + diffuse;
     
+    
+    float4 totalColor = float4(0, 0, 0, 0);
     float4 texColor = color + diffuseTex.Sample(bilinearSampler, input.texCoord);
+    
+    clip(texColor.a - 0.1f);
     
     return texColor;
 }
