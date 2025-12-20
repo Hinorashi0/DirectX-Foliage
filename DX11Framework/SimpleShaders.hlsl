@@ -21,10 +21,11 @@ struct VS_Out
     float3 PosW : POSITION0;
     float3 NormalW : NORMAL;
     float2 texCoord : TEXCOORD;
+    uint Instance : SV_InstanceID;
 };
 
 
-VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD)
+VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, uint Instance : SV_InstanceID)
 {
     VS_Out output;
 
