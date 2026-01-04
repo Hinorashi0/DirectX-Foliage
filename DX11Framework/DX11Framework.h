@@ -59,6 +59,8 @@ class DX11Framework
 	ID3D11BlendState* _blendState;
 	ID3D11SamplerState* _bilinearSamplerState;
 	ID3D11ShaderResourceView* _crateTexture;
+	ID3D11Buffer* _instanceBuffer = nullptr;
+	ID3D11ShaderResourceView* _instanceBufferSRV = nullptr;
 
 	HWND _windowHandle;
 
@@ -78,6 +80,8 @@ class DX11Framework
 
 	ID3D11Texture2D* _depthStencilBuffer;
 	ID3D11DepthStencilView* _depthStencilView;
+
+	UINT _instanceCount = 50; // adjustable instance count
 
 public:
 	HRESULT Initialise(HINSTANCE hInstance, int nCmdShow);
