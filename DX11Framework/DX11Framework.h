@@ -31,6 +31,11 @@ struct ConstantBuffer
 	int hasTexture;
 };
 
+struct InstanceData
+{
+	XMFLOAT3 position;
+};
+
 class DX11Framework
 {
 	int _WindowWidth = 1280;
@@ -59,8 +64,8 @@ class DX11Framework
 	ID3D11BlendState* _blendState;
 	ID3D11SamplerState* _bilinearSamplerState;
 	ID3D11ShaderResourceView* _crateTexture;
-	ID3D11Buffer* _instanceBuffer = nullptr;
-	ID3D11ShaderResourceView* _instanceBufferSRV = nullptr;
+	ID3D11Buffer* _instanceBuffer;
+	ID3D11ShaderResourceView* _instanceBufferSRV;
 
 	HWND _windowHandle;
 

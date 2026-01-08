@@ -201,12 +201,12 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 
     if (FAILED(hr)) return hr;
 
-    D3D11_INPUT_ELEMENT_DESC inputElementDesc[]
+    D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "SV_InstanceID",   0, DXGI_FORMAT_R32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "INSTANCEPOS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
     };
 
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
@@ -402,6 +402,31 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     hr = _device->CreateBuffer(&pyramidindexBufferDesc, &pyramidData, &_pyramidIndexBuffer);
     if (FAILED(hr)) return hr;
 
+
+
+    InstanceData instanceData[] =
+    {
+        { XMFLOAT3(0.0f, 0.0f, 0.0f) },   // First instance at origin
+        { XMFLOAT3(2.0f, 0.0f, 0.0f) },    
+		{ XMFLOAT3(3.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(-2.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(-3.0f, 0.0f, 0.0f) },
+    };
+
+    const UINT instanceCount = ARRAYSIZE(instanceData);
+
+    D3D11_BUFFER_DESC instanceBufferDesc = {};
+    instanceBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    instanceBufferDesc.ByteWidth = sizeof(InstanceData) * instanceCount;
+    instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    instanceBufferDesc.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA instanceBufferData = {};
+    instanceBufferData.pSysMem = instanceData;
+
+    hr = _device->CreateBuffer(&instanceBufferDesc, &instanceBufferData, &_instanceBuffer);
+    if (FAILED(hr)) return hr;
+
     return S_OK;
 }
 
@@ -510,45 +535,8 @@ HRESULT DX11Framework::InitRunTimeData()
     //Storing Textures
     hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
 
-    //Instance Buffer
-    const UINT instanceCount = _instanceCount;
-    std::vector<XMFLOAT4X4> instanceData(instanceCount);
 
-    // layout instances in a grid for visibility
-    const int columns = 10;
-    const float spacing = 3.0f;
-    for (UINT i = 0; i < instanceCount; ++i)
-    {
-        float x = (float)(i % columns) * spacing - (columns * spacing) / 2.0f;
-        float y = 0.0f;
-        float z = (float)(i / columns) * spacing;
-        XMMATRIX m = XMMatrixTranslation(x, y, z);
-        // transpose to match shader memory layout if you transpose CB matrices on CPU
-        XMStoreFloat4x4(&instanceData[i], XMMatrixTranspose(m));
-    }
 
-    D3D11_BUFFER_DESC instDesc = {};
-    instDesc.ByteWidth = sizeof(XMFLOAT4X4) * instanceCount;
-    instDesc.Usage = D3D11_USAGE_DEFAULT;
-    instDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    instDesc.CPUAccessFlags = 0;
-    instDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-    instDesc.StructureByteStride = sizeof(XMFLOAT4X4);
-
-    D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = instanceData.data();
-
-    hr = _device->CreateBuffer(&instDesc, &initData, &_instanceBuffer);
-    if (FAILED(hr)) return hr;
-
-    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    srvDesc.Format = DXGI_FORMAT_UNKNOWN; // required for structured buffer SRV
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-    srvDesc.Buffer.FirstElement = 0;
-    srvDesc.Buffer.NumElements = instanceCount;
-
-    hr = _device->CreateShaderResourceView(_instanceBuffer, &srvDesc, &_instanceBufferSRV);
-    if (FAILED(hr)) return hr;
 
     return S_OK;
 }
@@ -644,16 +632,20 @@ void DX11Framework::Draw()
 
 
     //Set object variables and draw
-    UINT stride = {sizeof(SimpleVertex)};
-    UINT offset =  0 ;
-    _immediateContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
+    UINT strides[2] = { sizeof(SimpleVertex), sizeof(InstanceData) };
+    UINT offsets[2] = { 0, 0 };
+    ID3D11Buffer* buffers[2] = { _vertexBuffer, _instanceBuffer };
+
+    _immediateContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
     _immediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+
 
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
 
     _immediateContext->DrawIndexedInstanced(36, _instanceCount, 0, 0, 0);
 
+    /*
     _immediateContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
 
     //Remap to update data Earth
@@ -666,23 +658,9 @@ void DX11Framework::Draw()
     _immediateContext->Unmap(_constantBuffer, 0);
 
     _immediateContext->DrawIndexed(36, 0, 0);
-     
-    //Remap to update data 2nd Cube
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
-    //Load new world info
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World3));
-
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
-
-    _immediateContext->IASetVertexBuffers(0, 1, &_pyramidVertexBuffer, &stride, &offset);
-    _immediateContext->IASetIndexBuffer(_pyramidIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-
-    _immediateContext->DrawIndexed(18, 0, 0);
 
     //Remap to update data Line
-   /*_immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+   _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
     //Load new world info
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World4));
@@ -693,9 +671,6 @@ void DX11Framework::Draw()
     _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
     _immediateContext->IASetVertexBuffers(0, 1, &_lineVertexBuffer, &stride, &offset);
     _immediateContext->Draw(2, 0);*/
-
-
-
 
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);

@@ -18,36 +18,35 @@ struct VS_Out
 {
     float4 position : SV_POSITION;
     float4 color : COLOR;
-    float3 PosW : POSITION0;
-    float3 NormalW : NORMAL;
+    float3 Normal : NORMAL;
     float2 texCoord : TEXCOORD;
-    uint Instance : SV_InstanceID;
+    float3 instancePos : INSTANCEPOS;
 };
 
 
-VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, uint Instance : SV_InstanceID)
+VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, float3 Instance : INSTANCEPOS)
 {
     VS_Out output;
 
     // Transform to world space
-    output.position = mul(float4(Position, 1.0f), World);
-    
-    output.PosW = output.position.xyz;
+    float3 worldPos = mul(float4(Position + Instance, 1.0f), World).xyz;
+    output.position = float4(worldPos, 1.0f);
 
     // Transform to clip space
     output.position = mul(output.position, View);
     output.position = mul(output.position, Projection);
-    
+
     // Transform normal to world space
-    output.NormalW = normalize(mul(float4(Normal, 0.0f), World).xyz);
+    output.Normal = normalize(mul(float4(Normal, 0.0f), World).xyz);
     output.texCoord = TexCoord;
+    output.instancePos = Instance;
 
     return output;
 }
     
 float4 PS_main(VS_Out input) : SV_TARGET
 {
-    float d = dot(input.NormalW, -LightDir);
+    float d = dot(input.Normal, -LightDir);
 
     float DiffuseAmount = saturate(d);
     float4 diffuse = DiffuseAmount * (DiffuseMaterial * DiffuseLight);
