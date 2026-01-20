@@ -20,12 +20,19 @@ cbuffer InstanceBuffer : register(b1)
     float4x4 InstanceWorld[128];
 };
 
+struct VS_Input
+{
+    float3 Position : POSITION;
+    float3 Normal : NORMAL;
+    float2 TexCoord : TEXCOORD;
+
+};
+
 struct VS_Out
 {
-    float4 position : POSITION;
+    float4 position : SV_POSITION;
     float3 Normal : NORMAL;
     float2 texCoord : TEXCOORD;
-    uint instanceID : SV_InstanceID;
 };
 
 
@@ -34,7 +41,7 @@ VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoo
 {
     VS_Out output = (VS_Out) 0;
     
-    float4 worldPos = mul(float4(output.position),InstanceWorld[instanceID]);
+    float4 worldPos = mul(float4(Position, 1.0f),InstanceWorld[instanceID]);
 
     worldPos = mul(worldPos, World);
     worldPos = mul(worldPos, View);
@@ -42,7 +49,7 @@ VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoo
 
     output.position = worldPos;
     output.texCoord = TexCoord;
-    output.Normal = mul(output.Normal, (float3x3) World);
+    output.Normal = mul(Normal,(float3x3) World);
 
     return output;
 }

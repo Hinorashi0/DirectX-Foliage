@@ -88,7 +88,7 @@ class DX11Framework
 	ID3D11Texture2D* _depthStencilBuffer;
 	ID3D11DepthStencilView* _depthStencilView;
 
-	UINT _instanceCount = 50; // adjustable instance count
+	UINT _instanceCount = 128; // adjustable instance count
 
 public:
 	HRESULT Initialise(HINSTANCE hInstance, int nCmdShow);
