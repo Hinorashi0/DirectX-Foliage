@@ -14,32 +14,35 @@ cbuffer ConstantBuffer : register(b0)
     float count;
     uint hasTexture;
 }
+
+cbuffer InstanceBuffer : register(b1)
+{
+    float4x4 InstanceWorld[128];
+};
+
 struct VS_Out
 {
-    float4 position : SV_POSITION;
-    float4 color : COLOR;
+    float4 position : POSITION;
     float3 Normal : NORMAL;
     float2 texCoord : TEXCOORD;
-    float3 instancePos : INSTANCEPOS;
+    uint instanceID : SV_InstanceID;
 };
 
 
-VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, float3 Instance : INSTANCEPOS)
+
+VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, uint instanceID : SV_InstanceID)
 {
-    VS_Out output;
+    VS_Out output = (VS_Out) 0;
+    
+    float4 worldPos = mul(float4(output.position),InstanceWorld[instanceID]);
 
-    // Transform to world space
-    float3 worldPos = mul(float4(Position + Instance, 1.0f), World).xyz;
-    output.position = float4(worldPos, 1.0f);
+    worldPos = mul(worldPos, World);
+    worldPos = mul(worldPos, View);
+    worldPos = mul(worldPos, Projection);
 
-    // Transform to clip space
-    output.position = mul(output.position, View);
-    output.position = mul(output.position, Projection);
-
-    // Transform normal to world space
-    output.Normal = normalize(mul(float4(Normal, 0.0f), World).xyz);
+    output.position = worldPos;
     output.texCoord = TexCoord;
-    output.instancePos = Instance;
+    output.Normal = mul(output.Normal, (float3x3) World);
 
     return output;
 }

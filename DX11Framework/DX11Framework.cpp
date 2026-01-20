@@ -311,6 +311,8 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
         {XMFLOAT3(0,4,0), XMFLOAT4(1, 1, 1, 1) },
     };*/
 
+
+
     D3D11_BUFFER_DESC vertexBufferDesc = {};
     vertexBufferDesc.ByteWidth = sizeof(VertexData);
     vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -330,6 +332,15 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     hr = _device->CreateBuffer(&pyramidvertexBufferDesc, &pyramidvertexData, &_pyramidVertexBuffer);
     if (FAILED(hr)) return hr;
+
+
+    D3D11_BUFFER_DESC instanceCBDesc = {};
+    instanceCBDesc.Usage = D3D11_USAGE_DYNAMIC;
+    instanceCBDesc.ByteWidth = sizeof(InstanceCB);
+    instanceCBDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    instanceCBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    _device->CreateBuffer(&instanceCBDesc, nullptr, &_instanceConstantBuffer);
 
     /*D3D11_BUFFER_DESC linevertexBufferDesc = {};
     linevertexBufferDesc.ByteWidth = sizeof(linelist);
@@ -402,30 +413,6 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     hr = _device->CreateBuffer(&pyramidindexBufferDesc, &pyramidData, &_pyramidIndexBuffer);
     if (FAILED(hr)) return hr;
 
-
-
-    InstanceData instanceData[] =
-    {
-        { XMFLOAT3(0.0f, 0.0f, 0.0f) },   // First instance at origin
-        { XMFLOAT3(2.0f, 0.0f, 0.0f) },    
-		{ XMFLOAT3(3.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-2.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-3.0f, 0.0f, 0.0f) },
-    };
-
-    const UINT instanceCount = ARRAYSIZE(instanceData);
-
-    D3D11_BUFFER_DESC instanceBufferDesc = {};
-    instanceBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    instanceBufferDesc.ByteWidth = sizeof(InstanceData) * instanceCount;
-    instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    instanceBufferDesc.CPUAccessFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA instanceBufferData = {};
-    instanceBufferData.pSysMem = instanceData;
-
-    hr = _device->CreateBuffer(&instanceBufferDesc, &instanceBufferData, &_instanceBuffer);
-    if (FAILED(hr)) return hr;
 
     return S_OK;
 }
@@ -503,6 +490,7 @@ HRESULT DX11Framework::InitPipelineVariables()
     if (FAILED(hr)) { return hr; }
 
     _immediateContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
+    _immediateContext->VSSetConstantBuffers(1, 1, &_instanceConstantBuffer);
     _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
 
     return S_OK;
@@ -565,6 +553,7 @@ DX11Framework::~DX11Framework()
     if (_lineVertexBuffer)_lineVertexBuffer->Release();
     if (_blendState)_blendState->Release();
     if (_crateTexture)_crateTexture->Release();
+	if (_instanceConstantBuffer)_instanceConstantBuffer->Release();
 }
 
 
@@ -581,16 +570,22 @@ void DX11Framework::Update()
     simpleCount += deltaTime;
     _cbData.count = simpleCount;
 
-    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 2));
-
-    XMStoreFloat4x4(&_World2, XMMatrixIdentity() /* XMMatrixTranslation(4, sin(simpleCount), 2.5)*/ * XMMatrixRotationX(simpleCount));
-
-    XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
-
+    //XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 2));
+    //XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
     //XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
 
-    //XMStoreFloat4x4(&_World4, XMMatrixIdentity());
-    
+    InstanceCB instanceData = {};
+
+    for (UINT i = 0; i < _instanceCount; i++)
+    {
+        XMStoreFloat4x4(&instanceData.InstanceWorld[i],XMMatrixTranspose(XMMatrixTranslation(i * 2.0f, 0.0f, 0.0f)));
+    }
+
+    D3D11_MAPPED_SUBRESOURCE mapped;
+    _immediateContext->Map(_instanceConstantBuffer,0,D3D11_MAP_WRITE_DISCARD,0,&mapped);
+
+    memcpy(mapped.pData, &instanceData, sizeof(InstanceCB));
+    _immediateContext->Unmap(_instanceConstantBuffer, 0);
 
     if (GetAsyncKeyState(VK_F1) & 0x0001) 
     {
@@ -630,13 +625,11 @@ void DX11Framework::Draw()
     _immediateContext->Unmap(_constantBuffer, 0);
 
 
+    UINT strides[1] = { sizeof(SimpleVertex) };
+    UINT offsets[1] = { 0 };
+    ID3D11Buffer* buffers[1] = { _vertexBuffer };
 
-    //Set object variables and draw
-    UINT strides[2] = { sizeof(SimpleVertex), sizeof(InstanceData) };
-    UINT offsets[2] = { 0, 0 };
-    ID3D11Buffer* buffers[2] = { _vertexBuffer, _instanceBuffer };
-
-    _immediateContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
+    _immediateContext->IASetVertexBuffers(0, 1, &_vertexBuffer, strides, offsets);
     _immediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
 

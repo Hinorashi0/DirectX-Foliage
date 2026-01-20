@@ -31,9 +31,11 @@ struct ConstantBuffer
 	int hasTexture;
 };
 
-struct InstanceData
+static const UINT MAX_INSTANCES = 128;
+
+struct InstanceCB
 {
-	XMFLOAT3 position;
+	XMFLOAT4X4 InstanceWorld[MAX_INSTANCES];
 };
 
 class DX11Framework
@@ -61,11 +63,11 @@ class DX11Framework
 	ID3D11Buffer* _pyramidVertexBuffer;
 	ID3D11Buffer* _pyramidIndexBuffer;
 	ID3D11Buffer* _lineVertexBuffer;
+	ID3D11Buffer* _instanceConstantBuffer;
 	ID3D11BlendState* _blendState;
 	ID3D11SamplerState* _bilinearSamplerState;
 	ID3D11ShaderResourceView* _crateTexture;
-	ID3D11Buffer* _instanceBuffer;
-	ID3D11ShaderResourceView* _instanceBufferSRV;
+
 
 	HWND _windowHandle;
 
