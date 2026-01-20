@@ -39,7 +39,7 @@ struct VS_Out
 
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, uint instanceID : SV_InstanceID)
 {
-    VS_Out output = (VS_Out) 0;
+    VS_Out output;
     
     float4 worldPos = mul(float4(Position, 1.0f),InstanceWorld[instanceID]);
 
