@@ -65,7 +65,7 @@ class DX11Framework
 	ID3D11SamplerState* _bilinearSamplerState;
 	ID3D11ShaderResourceView* _crateTexture;
 	ID3D11Buffer* _instanceBuffer;
-	ID3D11ShaderResourceView* _instanceBufferSRV;
+	ID3D11ShaderResourceView* _instanceSRV;
 
 	HWND _windowHandle;
 

@@ -418,13 +418,23 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     D3D11_BUFFER_DESC instanceBufferDesc = {};
     instanceBufferDesc.Usage = D3D11_USAGE_DEFAULT;
     instanceBufferDesc.ByteWidth = sizeof(InstanceData) * instanceCount;
-    instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    instanceBufferDesc.CPUAccessFlags = 0;
+    instanceBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    instanceBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+    instanceBufferDesc.StructureByteStride = sizeof(InstanceData);
 
     D3D11_SUBRESOURCE_DATA instanceBufferData = {};
     instanceBufferData.pSysMem = instanceData;
 
-    hr = _device->CreateBuffer(&instanceBufferDesc, &instanceBufferData, &_instanceBuffer);
+    HRESULT hr = _device->CreateBuffer(&instanceBufferDesc, &instanceBufferData, &_instanceBuffer);
+    if (FAILED(hr)) return hr;
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+    srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+    srvDesc.Buffer.FirstElement = 0;
+    srvDesc.Buffer.NumElements = instanceCount;
+
+    hr = _device->CreateShaderResourceView(_instanceBuffer,&srvDesc, &_instanceSRV);
     if (FAILED(hr)) return hr;
 
     return S_OK;
