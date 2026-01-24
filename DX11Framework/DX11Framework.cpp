@@ -206,7 +206,6 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "INSTANCEPOS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
     };
 
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
@@ -406,11 +405,11 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     InstanceData instanceData[] =
     {
-        { XMFLOAT3(0.0f, 0.0f, 0.0f) },   // First instance at origin
-        { XMFLOAT3(2.0f, 0.0f, 0.0f) },    
-		{ XMFLOAT3(3.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-2.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-3.0f, 0.0f, 0.0f) },
+        { XMFLOAT3(0.0f, 0.0f, 0.0f) },
+        { XMFLOAT3(2.0f, 0.0f, 0.0f) },
+        { XMFLOAT3(3.0f, 0.0f, 0.0f) },
+        { XMFLOAT3(-2.0f, 0.0f, 0.0f) },
+        { XMFLOAT3(-3.0f, 0.0f, 0.0f) },
     };
 
     const UINT instanceCount = ARRAYSIZE(instanceData);
@@ -424,8 +423,9 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     D3D11_SUBRESOURCE_DATA instanceBufferData = {};
     instanceBufferData.pSysMem = instanceData;
+    _instanceCount = instanceCount;
 
-    HRESULT hr = _device->CreateBuffer(&instanceBufferDesc, &instanceBufferData, &_instanceBuffer);
+    hr = _device->CreateBuffer(&instanceBufferDesc, &instanceBufferData, &_instanceBuffer);
     if (FAILED(hr)) return hr;
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -591,7 +591,7 @@ void DX11Framework::Update()
     simpleCount += deltaTime;
     _cbData.count = simpleCount;
 
-    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 2));
+    XMStoreFloat4x4(&_World, XMMatrixRotationX(simpleCount));
 
     //XMStoreFloat4x4(&_World2, XMMatrixIdentity() /* XMMatrixTranslation(4, sin(simpleCount), 2.5)*/ * XMMatrixRotationX(simpleCount));
 
@@ -622,7 +622,9 @@ void DX11Framework::Draw()
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
     _immediateContext->PSSetShaderResources(0, 1, &_crateTexture);
     _immediateContext->OMSetBlendState(0, 0, 0xffffffff);
+    _immediateContext->VSSetShaderResources(1, 1, &_instanceSRV);
     
+
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World));
     _cbData.View = XMMatrixTranspose(XMLoadFloat4x4(&_View));
@@ -640,13 +642,10 @@ void DX11Framework::Draw()
     _immediateContext->Unmap(_constantBuffer, 0);
 
 
+    UINT stride = sizeof(SimpleVertex);
+    UINT offset = 0;
 
-    //Set object variables and draw
-    UINT strides[2] = { sizeof(SimpleVertex), sizeof(InstanceData) };
-    UINT offsets[2] = { 0, 0 };
-    ID3D11Buffer* buffers[2] = { _vertexBuffer, _instanceBuffer };
-
-    _immediateContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
+    _immediateContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
     _immediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
 

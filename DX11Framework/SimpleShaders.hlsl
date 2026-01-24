@@ -20,26 +20,34 @@ struct VS_Out
     float4 color : COLOR;
     float3 Normal : NORMAL;
     float2 texCoord : TEXCOORD;
-    float3 instancePos : INSTANCEPOS;
 };
 
+struct InstanceData
+{
+    float3 position;
+};
 
-VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, float3 Instance : INSTANCEPOS)
+StructuredBuffer<InstanceData> InstanceBuffer : register(t1);
+
+
+VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, uint Instance : SV_InstanceID)
 {
     VS_Out output;
+    
+    InstanceData inst = InstanceBuffer[Instance];
 
-    // Transform to world space
-    float3 worldPos = mul(float4(Position + Instance, 1.0f), World).xyz;
-    output.position = float4(worldPos, 1.0f);
+    float4 localPos = float4(Position, 1.0f);
+    localPos.xyz += inst.position;
+
+    float4 worldPos = mul(localPos, World);
 
     // Transform to clip space
-    output.position = mul(output.position, View);
+    output.position = mul(worldPos, View);
     output.position = mul(output.position, Projection);
 
     // Transform normal to world space
     output.Normal = normalize(mul(float4(Normal, 0.0f), World).xyz);
     output.texCoord = TexCoord;
-    output.instancePos = Instance;
 
     return output;
 }
