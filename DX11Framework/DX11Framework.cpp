@@ -569,7 +569,7 @@ void DX11Framework::Update()
     simpleCount += deltaTime;
     _cbData.count = simpleCount;
 
-    //XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 2));
+    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 2));
     //XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
     //XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
 
