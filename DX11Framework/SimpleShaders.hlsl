@@ -25,21 +25,36 @@ struct VS_Out
 struct InstanceData
 {
     float3 position;
+    float rotationY;
 };
 
 StructuredBuffer<InstanceData> InstanceBuffer : register(t1);
 
+float3 RotateY(float3 v, float angle)
+{
+    float s = sin(angle);
+    float c = cos(angle);
+
+    return float3(
+        v.x * c - v.z * s,
+        v.y,
+        v.x * s + v.z * c
+    );
+}
 
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, uint Instance : SV_InstanceID)
 {
     VS_Out output;
     
+    
     InstanceData inst = InstanceBuffer[Instance];
+    
 
-    float4 localPos = float4(Position, 1.0f);
-    localPos.xyz += inst.position;
+    float3 pos = Position;
+    pos = RotateY(pos, inst.rotationY);
+    pos += inst.position;
 
-    float4 worldPos = mul(localPos, World);
+    float4 worldPos = mul(float4(pos, 1.0f), World);
 
     // Transform to clip space
     output.position = mul(worldPos, View);
@@ -67,7 +82,7 @@ float4 PS_main(VS_Out input) : SV_TARGET
     float4 totalColor = float4(0, 0, 0, 0);
     float4 texColor = color + diffuseTex.Sample(bilinearSampler, input.texCoord);
     
-    clip(texColor.a - 0.1f);
+    clip(texColor.a - 0.9f);
     
     return texColor;
 }
