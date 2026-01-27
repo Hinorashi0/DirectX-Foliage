@@ -2,6 +2,7 @@
 #include <string>
 #include "DDSTextureLoader.h"
 #include <vector>
+#include <random>
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
 #define ThrowOnFail(x) if(FAILED(x)) throw new std::exception;
@@ -238,41 +239,16 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     SimpleVertex VertexData[] =
     {
-        // Front Face
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(-1.0f,  0.5f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(1.0f,  0.5f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
         { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
 
         // Right Face
-        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
-
-        // Back Face
-        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(1.0f, 1.0f) },
-
-        // Left Face
-        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
-
-        // Top Face
-        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f), XMFLOAT2(0.0f, 1.0f)},
-        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
-
-        // Bottom Face
-        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(0.0f,  0.5f, -2.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(0.0f,  0.5f,  0.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(0.0f, -1.0f, -2.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
     };
 
     SimpleVertex PyramidVertexData[] =
@@ -403,28 +379,32 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     if (FAILED(hr)) return hr;
 
 
+    std::vector<InstanceData> instanceData;
 
-    InstanceData instanceData[] =
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_real_distribution<float> distPos(-20.0f, 20.0f);
+    std::uniform_real_distribution<float> distRot(0.0f, XM_2PI);
+
+    for (int i = 0; i < _instanceCount; ++i)
     {
-        { XMFLOAT3(0.0f, 0.0f, 0.0f) },   // First instance at origin
-        { XMFLOAT3(2.0f, 0.0f, 0.0f) },    
-		{ XMFLOAT3(3.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-2.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-3.0f, 0.0f, 0.0f) },
-    };
+        XMFLOAT3 pos(distPos(rng), 0.0f, distPos(rng));
+        float baseRot = distRot(rng);
 
-    const UINT instanceCount = ARRAYSIZE(instanceData);
+        instanceData.push_back({ pos, baseRot });
+    }
 
-    D3D11_BUFFER_DESC instanceBufferDesc = {};
-    instanceBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    instanceBufferDesc.ByteWidth = sizeof(InstanceData) * instanceCount;
-    instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    instanceBufferDesc.CPUAccessFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA instanceBufferData = {};
-    instanceBufferData.pSysMem = instanceData;
+    _instanceCount = static_cast<UINT>(instanceData.size());
 
-    hr = _device->CreateBuffer(&instanceBufferDesc, &instanceBufferData, &_instanceBuffer);
+    D3D11_BUFFER_DESC desc = {};
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.ByteWidth = sizeof(InstanceData) * instanceData.size();
+    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA data = {};
+    data.pSysMem = instanceData.data();
+
+    _device->CreateBuffer(&desc, &data, &_instanceBuffer);
     if (FAILED(hr)) return hr;
 
     return S_OK;
@@ -515,7 +495,7 @@ HRESULT DX11Framework::InitRunTimeData()
     //Camera
     float aspect = _viewport.Width / _viewport.Height;
 
-    XMFLOAT3 Eye = XMFLOAT3(0, 0, -10.0f);
+    XMFLOAT3 Eye = XMFLOAT3(0, 15, -30.0f);
     XMFLOAT3 At = XMFLOAT3(0, 0, 0);
     XMFLOAT3 Up = XMFLOAT3(0, 1, 0);
 
@@ -533,7 +513,7 @@ HRESULT DX11Framework::InitRunTimeData()
     XMStoreFloat4x4(&_Projection, perspective);
 
     //Storing Textures
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\vegetation_grass.dds", nullptr, &_crateTexture);
 
 
 
@@ -581,16 +561,8 @@ void DX11Framework::Update()
     simpleCount += deltaTime;
     _cbData.count = simpleCount;
 
-    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 2));
+    XMStoreFloat4x4(&_World, XMMatrixIdentity());
 
-    XMStoreFloat4x4(&_World2, XMMatrixIdentity() /* XMMatrixTranslation(4, sin(simpleCount), 2.5)*/ * XMMatrixRotationX(simpleCount));
-
-    XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
-
-    //XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
-
-    //XMStoreFloat4x4(&_World4, XMMatrixIdentity());
-    
 
     if (GetAsyncKeyState(VK_F1) & 0x0001) 
     {

@@ -24,25 +24,44 @@ struct VS_Out
 };
 
 
-VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, float3 Instance : INSTANCEPOS)
+
+float3 RotateY(float3 v, float angle)
+{
+    float s = sin(angle);
+    float c = cos(angle);
+
+    return float3(
+        v.x * c - v.z * s,
+        v.y,
+        v.x * s + v.z * c
+    );
+}
+
+VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, float3 InstancePos : INSTANCEPOS, uint InstanceID : SV_InstanceID)
 {
     VS_Out output;
 
-    // Transform to world space
-    float3 worldPos = mul(float4(Position + Instance, 1.0f), World).xyz;
-    output.position = float4(worldPos, 1.0f);
+    static const float HALF_PI = 1.57079632f;
 
-    // Transform to clip space
-    output.position = mul(output.position, View);
+    float3 pos = Position;
+
+    if ((InstanceID & 1) == 1)
+    {
+        pos = RotateY(pos, HALF_PI);
+    }
+
+    pos += InstancePos;
+
+    float4 worldPos = mul(float4(pos, 1.0f), World);
+    output.position = mul(worldPos, View);
     output.position = mul(output.position, Projection);
 
-    // Transform normal to world space
     output.Normal = normalize(mul(float4(Normal, 0.0f), World).xyz);
     output.texCoord = TexCoord;
-    output.instancePos = Instance;
 
     return output;
 }
+
     
 float4 PS_main(VS_Out input) : SV_TARGET
 {
@@ -59,7 +78,7 @@ float4 PS_main(VS_Out input) : SV_TARGET
     float4 totalColor = float4(0, 0, 0, 0);
     float4 texColor = color + diffuseTex.Sample(bilinearSampler, input.texCoord);
     
-    clip(texColor.a - 0.1f);
+    clip(texColor.a - 0.9f);
     
     return texColor;
 }

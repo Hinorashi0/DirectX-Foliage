@@ -34,6 +34,7 @@ struct ConstantBuffer
 struct InstanceData
 {
 	XMFLOAT3 position;
+	float rotationY;
 };
 
 class DX11Framework
@@ -86,7 +87,7 @@ class DX11Framework
 	ID3D11Texture2D* _depthStencilBuffer;
 	ID3D11DepthStencilView* _depthStencilView;
 
-	UINT _instanceCount = 50; // adjustable instance count
+	UINT _instanceCount = 500000; // adjustable instance count
 
 public:
 	HRESULT Initialise(HINSTANCE hInstance, int nCmdShow);
