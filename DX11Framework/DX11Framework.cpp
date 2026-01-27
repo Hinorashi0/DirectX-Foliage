@@ -2,6 +2,8 @@
 #include <string>
 #include "DDSTextureLoader.h"
 #include <vector>
+#include <time.h>
+#include <iostream>
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
 #define ThrowOnFail(x) if(FAILED(x)) throw new std::exception;
@@ -238,40 +240,16 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     SimpleVertex VertexData[] =
     {
         // Front Face
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(-1.0f,  0.5f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(1.0f,  0.5f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
         { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f,  0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
 
         // Right Face
-        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
-
-        // Back Face
-        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f,  0.0f,  1.0f), XMFLOAT2(1.0f, 1.0f) },
-
-        // Left Face
-        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
-
-        // Top Face
-        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f), XMFLOAT2(0.0f, 1.0f)},
-        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f,  1.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
-
-        // Bottom Face
-        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(0.0f,  0.5f, -2.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(0.0f,  0.5f,  0.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(0.0f, -1.0f, -2.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(0.0f, -1.0f,  0.0f), XMFLOAT3(1.0f,  0.0f,  0.0f), XMFLOAT2(1.0f, 1.0f) },
     };
 
     SimpleVertex PyramidVertexData[] =
@@ -304,12 +282,6 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     };
 
-    /*SimpleVertex linelist[] =
-    {
-        {XMFLOAT3(0,3,0), XMFLOAT4(1, 1, 1, 1) },
-        {XMFLOAT3(0,4,0), XMFLOAT4(1, 1, 1, 1) },
-    };*/
-
 
 
     D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -340,19 +312,6 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
     instanceCBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
     _device->CreateBuffer(&instanceCBDesc, nullptr, &_instanceConstantBuffer);
-
-    /*D3D11_BUFFER_DESC linevertexBufferDesc = {};
-    linevertexBufferDesc.ByteWidth = sizeof(linelist);
-    linevertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    linevertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA linevertexData = { linelist };
-
-    hr = _device->CreateBuffer(&linevertexBufferDesc, &linevertexData, &_lineVertexBuffer);
-    if (FAILED(hr)) return hr;*/
-
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     WORD IndexData[] =
     {
@@ -411,6 +370,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     hr = _device->CreateBuffer(&pyramidindexBufferDesc, &pyramidData, &_pyramidIndexBuffer);
     if (FAILED(hr)) return hr;
+
 
 
     return S_OK;
@@ -495,14 +455,22 @@ HRESULT DX11Framework::InitPipelineVariables()
     return S_OK;
 }
 
+
+float RandomRange(float min, float max)
+{
+    return min + (rand() / (float)RAND_MAX) * (max - min);
+}
+
 HRESULT DX11Framework::InitRunTimeData()
 {
     HRESULT hr = S_OK;
 
+    srand((unsigned)time(nullptr));
+
     //Camera
     float aspect = _viewport.Width / _viewport.Height;
 
-    XMFLOAT3 Eye = XMFLOAT3(0, 0, -10.0f);
+    XMFLOAT3 Eye = XMFLOAT3(0, 15, -30.0f);
     XMFLOAT3 At = XMFLOAT3(0, 0, 0);
     XMFLOAT3 Up = XMFLOAT3(0, 1, 0);
 
@@ -520,10 +488,34 @@ HRESULT DX11Framework::InitRunTimeData()
     XMStoreFloat4x4(&_Projection, perspective);
 
     //Storing Textures
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\vegetation_grass.dds", nullptr, &_crateTexture);
 
+    // Seed randomness ONCE
+    srand((unsigned)time(nullptr));
 
+    const UINT grassCount = 3000;
+    _instanceCount = grassCount * 2;
 
+    int count = 0;
+
+    for (UINT i = 0; i < grassCount; i++)
+    {
+
+        float x = RandomRange(-50.0f, 50.0f);
+        float z = RandomRange(-50.0f, 50.0f);
+        float baseRot = RandomRange(0.0f, XM_2PI);
+
+        XMMATRIX translation = XMMatrixTranslation(x, 0.0f, z);
+
+        XMMATRIX rotA = XMMatrixRotationY(baseRot);
+        XMMATRIX rotB = XMMatrixRotationY(baseRot + XM_PIDIV2);
+
+        XMStoreFloat4x4(&_staticInstanceData.InstanceWorld[i * 2],XMMatrixTranspose(rotA * translation)
+        );
+
+        XMStoreFloat4x4(&_staticInstanceData.InstanceWorld[i * 2 + 1],XMMatrixTranspose(rotB * translation)
+        );
+    }
 
     return S_OK;
 }
@@ -556,6 +548,7 @@ DX11Framework::~DX11Framework()
 }
 
 
+
 void DX11Framework::Update()
 {
     //Static initializes this value only once    
@@ -569,22 +562,17 @@ void DX11Framework::Update()
     simpleCount += deltaTime;
     _cbData.count = simpleCount;
 
-    XMStoreFloat4x4(&_World, XMMatrixIdentity() * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 2));
-    //XMMATRIX parent = XMMatrixMultiply(XMLoadFloat4x4(&_World2), XMMatrixTranslation(8, 0, 4));
-    //XMStoreFloat4x4(&_World3, parent  * XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationX(simpleCount) * XMMatrixTranslation(0, sin(simpleCount), 0));
+    XMStoreFloat4x4(&_World, XMMatrixIdentity());
 
     InstanceCB instanceData = {};
-
-    for (UINT i = 0; i < _instanceCount; i++)
-    {
-        XMStoreFloat4x4(&instanceData.InstanceWorld[i],XMMatrixTranspose(XMMatrixTranslation(i * 2.0f, 0.0f, 0.0f)));
-    }
 
     D3D11_MAPPED_SUBRESOURCE mapped;
     _immediateContext->Map(_instanceConstantBuffer,0,D3D11_MAP_WRITE_DISCARD,0,&mapped);
 
-    memcpy(mapped.pData, &instanceData, sizeof(InstanceCB));
+    memcpy(mapped.pData, &_staticInstanceData, sizeof(InstanceCB));
     _immediateContext->Unmap(_instanceConstantBuffer, 0);
+
+
 
     if (GetAsyncKeyState(VK_F1) & 0x0001) 
     {

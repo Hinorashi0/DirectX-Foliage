@@ -35,21 +35,30 @@ struct VS_Out
     float2 texCoord : TEXCOORD;
 };
 
+float3 RotateY(float3 v, float angle)
+{
+    float s = sin(angle);
+    float c = cos(angle);
 
+    return float3(
+        v.x * c - v.z * s,
+        v.y,
+        v.x * s + v.z * c
+    );
+}
 
-VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD, uint instanceID : SV_InstanceID)
+VS_Out VS_main(float3 Position : POSITION,float3 Normal : NORMAL,float2 TexCoord : TEXCOORD,uint instanceID : SV_InstanceID)
 {
     VS_Out output;
-    
-    float4 worldPos = mul(float4(Position, 1.0f),InstanceWorld[instanceID]);
 
+    float4 worldPos = mul(float4(Position, 1.0f), InstanceWorld[instanceID]);
     worldPos = mul(worldPos, World);
     worldPos = mul(worldPos, View);
     worldPos = mul(worldPos, Projection);
 
     output.position = worldPos;
     output.texCoord = TexCoord;
-    output.Normal = mul(Normal,(float3x3) World);
+    output.Normal = mul(Normal, (float3x3) World);
 
     return output;
 }
@@ -69,7 +78,7 @@ float4 PS_main(VS_Out input) : SV_TARGET
     float4 totalColor = float4(0, 0, 0, 0);
     float4 texColor = color + diffuseTex.Sample(bilinearSampler, input.texCoord);
     
-    clip(texColor.a - 0.1f);
+    clip(texColor.a - 0.9f);
     
     return texColor;
 }

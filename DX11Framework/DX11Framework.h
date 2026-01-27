@@ -31,12 +31,14 @@ struct ConstantBuffer
 	int hasTexture;
 };
 
-static const UINT MAX_INSTANCES = 128;
+static const UINT MAX_INSTANCES = 7000;
 
 struct InstanceCB
 {
 	XMFLOAT4X4 InstanceWorld[MAX_INSTANCES];
 };
+
+
 
 class DX11Framework
 {
@@ -68,6 +70,7 @@ class DX11Framework
 	ID3D11SamplerState* _bilinearSamplerState;
 	ID3D11ShaderResourceView* _crateTexture;
 
+	InstanceCB _staticInstanceData;
 
 	HWND _windowHandle;
 
@@ -82,6 +85,7 @@ class DX11Framework
 	XMFLOAT3 _lightDir;
 	XMFLOAT4 _ambientLight;
 	XMFLOAT4 _ambientMaterial;
+
 
 	ConstantBuffer _cbData;
 
