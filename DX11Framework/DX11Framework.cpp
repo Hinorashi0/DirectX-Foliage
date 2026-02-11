@@ -588,11 +588,10 @@ void DX11Framework::Update()
 }
 
 void DX11Framework::Draw()
-{    
-    OPTICK_EVENT("Draw");
+{
 
     //Present unbinds render target, so rebind and clear at start of each frame
-    float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };  
+    float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
     FLOAT blendFactor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
     _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
@@ -601,8 +600,13 @@ void DX11Framework::Draw()
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
     _immediateContext->PSSetShaderResources(0, 1, &_crateTexture);
     _immediateContext->OMSetBlendState(0, 0, 0xffffffff);
-    _immediateContext->VSSetShaderResources(1, 1, &_instanceSRV);
-    
+
+    OPTICK_EVENT("Bind Instance")
+    {
+        _immediateContext->VSSetShaderResources(1, 1, &_instanceSRV);
+    }
+
+
 
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World));
@@ -630,8 +634,12 @@ void DX11Framework::Draw()
 
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
-    
-    _immediateContext->DrawIndexedInstanced(8, _instanceCount, 0, 0, 0);
+
+    OPTICK_EVENT("Draw Call"); 
+    {
+        _immediateContext->DrawIndexedInstanced(8, _instanceCount, 0, 0, 0);
+    }
+
 
     /*
     _immediateContext->OMSetBlendState(_blendState, blendFactor, 0xffffffff);
