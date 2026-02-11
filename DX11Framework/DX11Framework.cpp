@@ -3,6 +3,7 @@
 #include "DDSTextureLoader.h"
 #include <vector>
 #include <random>
+#include "optick.h"
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
 #define ThrowOnFail(x) if(FAILED(x)) throw new std::exception;
@@ -26,6 +27,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
+
 
     return 0;
 }
@@ -550,6 +552,8 @@ DX11Framework::~DX11Framework()
 
 void DX11Framework::Update()
 {
+    OPTICK_FRAME("Update");
+
     //Static initializes this value only once    
     static ULONGLONG frameStart = GetTickCount64();
 
@@ -572,7 +576,7 @@ void DX11Framework::Update()
 
 void DX11Framework::Draw()
 {    
-
+    OPTICK_EVENT("Draw");
 
     //Present unbinds render target, so rebind and clear at start of each frame
     float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };  

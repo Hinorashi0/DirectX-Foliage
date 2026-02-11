@@ -1,10 +1,14 @@
 #include <windows.h>
 #include "DX11Framework.h"
 #include "DDSTextureLoader.h"
+#include "optick.h"
 
 //Dependencies:user32.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow){
+
+	OPTICK_THREAD("Main Thread");
+
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
