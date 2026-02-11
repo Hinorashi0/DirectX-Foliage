@@ -567,11 +567,10 @@ void DX11Framework::Update()
 
     XMStoreFloat4x4(&_World, XMMatrixIdentity());
 
+    OPTICK_EVENT("InstanceCB Upload");
     InstanceCB instanceData = {};
-
     D3D11_MAPPED_SUBRESOURCE mapped;
     _immediateContext->Map(_instanceConstantBuffer,0,D3D11_MAP_WRITE_DISCARD,0,&mapped);
-
     memcpy(mapped.pData, &_staticInstanceData, sizeof(InstanceCB));
     _immediateContext->Unmap(_instanceConstantBuffer, 0);
 
