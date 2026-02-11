@@ -609,7 +609,7 @@ void DX11Framework::Draw()
     _cbData.AmbientLight = _ambientLight;
     _cbData.AmbientMaterial = _ambientMaterial;
 
-    //Write constant buffer data onto GPU
+    OPTICK_EVENT("Update Constant Buffer");
     D3D11_MAPPED_SUBRESOURCE mappedSubresource;
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
@@ -627,6 +627,7 @@ void DX11Framework::Draw()
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
 
+    OPTICK_EVENT("DrawIndexedInstanced");
     _immediateContext->DrawIndexedInstanced(36, _instanceCount, 0, 0, 0);
 
     /*
