@@ -612,6 +612,7 @@ void DX11Framework::Draw()
     UINT offsets[2] = { 0, 0 };
     ID3D11Buffer* buffers[2] = { _vertexBuffer, _instanceBuffer };
 
+    OPTICK_EVENT("Submit Geometry")
     _immediateContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
     _immediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
@@ -619,6 +620,7 @@ void DX11Framework::Draw()
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
 
+    OPTICK_EVENT("Draw Call")
     _immediateContext->DrawIndexedInstanced(36, _instanceCount, 0, 0, 0);
 
     /*
