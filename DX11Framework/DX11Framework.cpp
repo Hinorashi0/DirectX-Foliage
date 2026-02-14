@@ -590,7 +590,7 @@ void DX11Framework::Update()
 void DX11Framework::Draw()
 {
     OPTICK_EVENT();
-    //Present unbinds render target, so rebind and clear at start of each frame
+
     float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
     FLOAT blendFactor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
     _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -600,7 +600,12 @@ void DX11Framework::Draw()
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
     _immediateContext->PSSetShaderResources(0, 1, &_crateTexture);
     _immediateContext->OMSetBlendState(0, 0, 0xffffffff);
-    _immediateContext->VSSetShaderResources(1, 1, &_instanceSRV);
+
+    OPTICK_EVENT("SetResources");
+    {
+        _immediateContext->VSSetShaderResources(1, 1, &_instanceSRV);
+    }
+
 
 
     //Store this frames data in constant buffer struct
