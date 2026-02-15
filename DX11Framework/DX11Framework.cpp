@@ -575,11 +575,11 @@ void DX11Framework::Update()
 }
 
 void DX11Framework::Draw()
-{    
+{
     OPTICK_EVENT("Draw");
 
     //Present unbinds render target, so rebind and clear at start of each frame
-    float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };  
+    float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
     FLOAT blendFactor[4] = { 0.75f, 0.75f, 0.75f, 1.0f };
     _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
@@ -588,7 +588,7 @@ void DX11Framework::Draw()
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
     _immediateContext->PSSetShaderResources(0, 1, &_crateTexture);
     _immediateContext->OMSetBlendState(0, 0, 0xffffffff);
-    
+
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_World));
     _cbData.View = XMMatrixTranspose(XMLoadFloat4x4(&_View));
@@ -613,8 +613,11 @@ void DX11Framework::Draw()
     ID3D11Buffer* buffers[2] = { _vertexBuffer, _instanceBuffer };
 
     OPTICK_EVENT("Submit Geometry")
-    _immediateContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
-    _immediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+    {
+        _immediateContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
+        _immediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+    }
+
 
 
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
@@ -650,6 +653,7 @@ void DX11Framework::Draw()
     _immediateContext->IASetVertexBuffers(0, 1, &_lineVertexBuffer, &stride, &offset);
     _immediateContext->Draw(2, 0);*/
 
+    OPTICK_EVENT("End")
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);
 
