@@ -656,6 +656,7 @@ void DX11Framework::Draw()
     _immediateContext->IASetVertexBuffers(0, 1, &_lineVertexBuffer, &stride, &offset);
     _immediateContext->Draw(2, 0);*/
 
+    OPTICK_EVENT("End")
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);
 
